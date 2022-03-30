@@ -80,12 +80,11 @@ class CollectionControllerTest {
         given(movies.save(Mockito.any())).willReturn(expected);
 
         mvc.perform(MockMvcRequestBuilders.post("/movies")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(expectedJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(expectedJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(expected.getTitle()));
     }
-
 
     private static String toJson(Object object) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(object);
@@ -155,7 +154,7 @@ class CollectionControllerTest {
         String updatedJson = toJson(updated);
         given(reviews.findById(Mockito.any())).willReturn(Optional.empty());
 
-        mvc.perform(MockMvcRequestBuilders.put("/reviews/"+updated.getId())
+        mvc.perform(MockMvcRequestBuilders.put("/reviews/" + updated.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedJson))
                 .andExpect(status().isNotFound());
@@ -177,7 +176,7 @@ class CollectionControllerTest {
         given(reviews.findById(existing.getId())).willReturn(Optional.of(existing));
         given(reviews.save(Mockito.any())).willReturn(updated);
 
-        mvc.perform(MockMvcRequestBuilders.put("/reviews/"+existing.getId())
+        mvc.perform(MockMvcRequestBuilders.put("/reviews/" + existing.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedJson))
                 .andExpect(status().isOk())

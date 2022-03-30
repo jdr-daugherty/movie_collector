@@ -3,3 +3,13 @@ org:
     api:
       base_uri: https://api.themoviedb.org/3
       api_key: b3e4d89cea61ee19a269058aeb2479ab
+
+springdoc:
+  api-docs:
+    # Enable the /v3/api-docs endpoint
+    enabled: true
+  swagger-ui:
+    # Enable the swagger-ui at http://localhost:8080/swagger-ui/index.html
+    enabled: true
+  # Packages to include
+  packagesToScan: com.daugherty.movie.collector

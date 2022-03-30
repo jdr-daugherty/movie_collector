@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static com.daugherty.movie.collector.model.ReviewUpdater.apply;
+
 @Slf4j
 @RestController
 public class CollectionController {
@@ -65,24 +67,8 @@ public class CollectionController {
     @PutMapping("/reviews/{id}")
     public ResponseEntity<Review> updateReview(@Valid @RequestBody Review updated) {
         return reviews.findById(updated.getId())
-                .map(existing -> patchReview(updated, existing))
+                .map(existing -> apply(updated, existing))
                 .map(existing -> ResponseEntity.ok().location(URI.create("/reviews/" + updated.getId())).body(existing))
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    private Review patchReview(Review source, Review target){
-        if( source.getTitle() != null ) {
-            target.setTitle(source.getTitle());
-        }
-        if( source.getBody() != null ) {
-            target.setBody(source.getBody());
-        }
-        if( source.getReviewed() != null && source.getReviewed().after(target.getReviewed())) {
-            target.setReviewed(source.getReviewed());
-        }
-        if( source.getRating() != null ) {
-            target.setRating(source.getRating());
-        }
-        return target;
     }
 }

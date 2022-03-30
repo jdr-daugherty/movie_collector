@@ -14,7 +14,7 @@ public final class TestObjectMother {
     }
 
     public static Review reviewWithoutId() {
-        return new Review("Reservoir Dogs", 1234);
+        return new Review("This movie is great!", 1234);
     }
 
     public static Movie movieWithId() {
@@ -29,8 +29,8 @@ public final class TestObjectMother {
 
     public static List<Review> listOfReviews() {
         return List.of(
-                new Review("Reservoir Dogs", 2345),
-                new Review("Murder She Said", 2456));
+                new Review("This movie is great!", 2345),
+                new Review("Excellent Film!", 2456));
     }
 
     public static List<Movie> listOfMovies() {

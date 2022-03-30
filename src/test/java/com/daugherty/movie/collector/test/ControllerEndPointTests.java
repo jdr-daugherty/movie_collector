@@ -66,6 +66,6 @@ public class ControllerEndPointTests {
 
         mvc.perform(get("/reviews/" + expected.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("Reservoir Dogs")));
+                .andExpect(jsonPath("$.title", is(expected.getTitle())));
     }
 }

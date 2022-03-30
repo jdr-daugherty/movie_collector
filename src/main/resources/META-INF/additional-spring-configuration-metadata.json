@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "org.themoviedb.api.base_uri",
+      "type": "java.lang.String",
+      "description": "The base URI of version 3 of the Movie Database API."
+    },
+    {
+      "name": "org.themoviedb.api.api_key",
+      "type": "java.lang.String",
+      "description": "The Movie Database API version 3 client API key."
+    }
+  ]
+}

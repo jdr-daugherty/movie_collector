@@ -1,0 +1,5 @@
+org:
+  themoviedb:
+    api:
+      base_uri: https://api.themoviedb.org/3
+      api_key: b3e4d89cea61ee19a269058aeb2479ab

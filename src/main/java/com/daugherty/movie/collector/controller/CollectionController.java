@@ -5,7 +5,6 @@ import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,5 +60,29 @@ public class CollectionController {
         return reviews.findById(id)
                 .map(m -> ResponseEntity.ok().location(URI.create("/reviews/" + id)).body(m))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/reviews/{id}")
+    public ResponseEntity<Review> updateReview(@Valid @RequestBody Review updated) {
+        return reviews.findById(updated.getId())
+                .map(existing -> patchReview(updated, existing))
+                .map(existing -> ResponseEntity.ok().location(URI.create("/reviews/" + updated.getId())).body(existing))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    private Review patchReview(Review source, Review target){
+        if( source.getTitle() != null ) {
+            target.setTitle(source.getTitle());
+        }
+        if( source.getBody() != null ) {
+            target.setBody(source.getBody());
+        }
+        if( source.getReviewed() != null && source.getReviewed().after(target.getReviewed())) {
+            target.setReviewed(source.getReviewed());
+        }
+        if( source.getRating() != null ) {
+            target.setRating(source.getRating());
+        }
+        return target;
     }
 }

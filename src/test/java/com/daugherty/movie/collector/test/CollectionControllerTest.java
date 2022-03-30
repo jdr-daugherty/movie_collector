@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.daugherty.movie.collector.test.TestObjectMother.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CollectionControllerTest {
 
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @MockBean
     private Movies movies;
@@ -71,7 +70,7 @@ class CollectionControllerTest {
     @Test
     void getMovieByIdNotFound() {
         ResponseEntity<Movie> result = controller.getMovieById(Long.MIN_VALUE);
-        assertTrue(result.getStatusCode() == HttpStatus.NOT_FOUND);
+        assertSame(result.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -87,18 +86,6 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.title").value(expected.getTitle()));
     }
 
-    @Test
-    void addNewReview() throws Exception {
-        Review expected = reviewWithoutId();
-        String expectedJson = toJson(expected);
-        given(reviews.save(Mockito.any())).willReturn(expected);
-
-        mvc.perform(MockMvcRequestBuilders.post("/reviews")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(expectedJson))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(expected.getTitle()));
-    }
 
     private static String toJson(Object object) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(object);
@@ -120,7 +107,7 @@ class CollectionControllerTest {
     @Test
     void getReviewByIdNotFound() {
         ResponseEntity<Review> result = controller.getReviewById(Long.MIN_VALUE);
-        assertTrue(result.getStatusCode() == HttpStatus.NOT_FOUND);
+        assertSame(result.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -131,5 +118,51 @@ class CollectionControllerTest {
         ResponseEntity<Review> result = controller.getReviewById(expected.getId());
         assertTrue(result.getStatusCode().is2xxSuccessful());
         assertEquals(expected, result.getBody());
+    }
+
+    @Test
+    void addNewReview() throws Exception {
+        Review expected = reviewWithoutId();
+        String expectedJson = toJson(expected);
+        given(reviews.save(Mockito.any())).willReturn(expected);
+
+        mvc.perform(MockMvcRequestBuilders.post("/reviews")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(expectedJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value(expected.getTitle()));
+    }
+
+    @Test
+    void updateReviewNotFound() throws Exception {
+        Review updated = reviewWithId();
+        String updatedJson = toJson(updated);
+        given(reviews.findById(Mockito.any())).willReturn(Optional.empty());
+
+        mvc.perform(MockMvcRequestBuilders.put("/reviews/"+updated.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateReview() throws Exception {
+        Review existing = reviewWithId();
+        Review updated = reviewWithId();
+        updated.setTitle("New Review Title!");
+        updated.setBody("New Review Body");
+        updated.setRating(10.0);
+        String updatedJson = toJson(updated);
+
+        given(reviews.findById(existing.getId())).willReturn(Optional.of(existing));
+        given(reviews.save(Mockito.any())).willReturn(updated);
+
+        mvc.perform(MockMvcRequestBuilders.put("/reviews/"+existing.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(updated.getTitle()))
+                .andExpect(jsonPath("$.body").value(updated.getBody()))
+                .andExpect(jsonPath("$.rating").value(updated.getRating()));
     }
 }

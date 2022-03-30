@@ -32,7 +32,7 @@ public class Review {
 
     @DecimalMax("10.0")
     @DecimalMin("0.0")
-    private double rating;
+    private Double rating;
 
     public Review(String title, long movieId) {
         this.title = title;

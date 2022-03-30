@@ -86,6 +86,14 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.title").value(expected.getTitle()));
     }
 
+    @Test
+    void deleteMovie() throws Exception {
+        given(movies.existsById(1234L)).willReturn(true);
+
+        mvc.perform(MockMvcRequestBuilders.delete("/movies/1234"))
+                .andExpect(status().isOk());
+    }
+
     private static String toJson(Object object) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(object);
     }
@@ -183,5 +191,13 @@ class CollectionControllerTest {
                 .andExpect(jsonPath("$.title").value(updated.getTitle()))
                 .andExpect(jsonPath("$.body").value(updated.getBody()))
                 .andExpect(jsonPath("$.rating").value(updated.getRating()));
+    }
+
+    @Test
+    void deleteReview() throws Exception {
+        given(reviews.existsById(1234L)).willReturn(true);
+
+        mvc.perform(MockMvcRequestBuilders.delete("/reviews/1234"))
+                .andExpect(status().isOk());
     }
 }

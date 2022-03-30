@@ -45,6 +45,15 @@ public class CollectionController {
                 .body(saved);
     }
 
+    @DeleteMapping("/movies/{id}")
+    public ResponseEntity<Movie> deleteMovie(@PathVariable long id) {
+        if (movies.existsById(id)) {
+            movies.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/reviews")
     public List<Review> getAllReviews() {
         return reviews.findAll();
@@ -78,5 +87,14 @@ public class CollectionController {
                         .location(URI.create("/reviews/" + updated.getId()))
                         .body(existing))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<Review> deleteReview(@PathVariable long id) {
+        if (reviews.existsById(id)) {
+            reviews.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

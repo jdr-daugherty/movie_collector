@@ -4,7 +4,6 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import java.util.List;
 
 import static com.daugherty.movie.collector.model.ReviewUpdater.apply;
 
-@Slf4j
 @RestController
 public class CollectionController {
 
@@ -34,7 +32,9 @@ public class CollectionController {
     @GetMapping("/movies/{id}")
     public ResponseEntity<Movie> getMovieById(@PathVariable long id) {
         return movies.findById(id)
-                .map(m -> ResponseEntity.ok().location(URI.create("/movies/" + id)).body(m))
+                .map(m -> ResponseEntity.ok()
+                        .location(URI.create("/movies/" + id))
+                        .body(m))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -63,15 +63,20 @@ public class CollectionController {
     @GetMapping("/reviews/{id}")
     public ResponseEntity<Review> getReviewById(@PathVariable long id) {
         return reviews.findById(id)
-                .map(m -> ResponseEntity.ok().location(URI.create("/reviews/" + id)).body(m))
+                .map(m -> ResponseEntity.ok()
+                        .location(URI.create("/reviews/" + id))
+                        .body(m))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<Review> updateReview(@Valid @RequestBody Review updated) {
-        return reviews.findById(updated.getId())
+    public ResponseEntity<Review> updateReview(@Valid @RequestBody Review updated,
+                                               @PathVariable long id) {
+        return reviews.findById(id)
                 .map(existing -> apply(updated, existing))
-                .map(existing -> ResponseEntity.ok().location(URI.create("/reviews/" + updated.getId())).body(existing))
+                .map(existing -> ResponseEntity.ok()
+                        .location(URI.create("/reviews/" + updated.getId()))
+                        .body(existing))
                 .orElse(ResponseEntity.notFound().build());
     }
 }

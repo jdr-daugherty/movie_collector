@@ -1,5 +1,7 @@
 package com.daugherty.movie.collector.model;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +17,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,5 +41,6 @@ public class Review {
         this.title = title;
         this.movieId = movieId;
         this.reviewed = new Date();
+        this.rating = 5.0;
     }
 }

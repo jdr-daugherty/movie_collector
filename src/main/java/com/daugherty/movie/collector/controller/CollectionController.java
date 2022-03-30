@@ -52,9 +52,12 @@ public class CollectionController {
 
     @PostMapping("/reviews")
     public ResponseEntity<Review> addNewReview(@Valid @RequestBody Review review) {
-        Review saved = reviews.save(review);
-        return ResponseEntity.created(URI.create("/reviews/" + review.getId()))
-                .body(saved);
+        if (movies.existsById(review.getMovieId())) {
+            Review saved = reviews.save(review);
+            return ResponseEntity.created(URI.create("/reviews/" + review.getId()))
+                    .body(saved);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/reviews/{id}")

@@ -122,7 +122,11 @@ class CollectionControllerTest {
 
     @Test
     void addNewReview() throws Exception {
+        Movie movie = movieWithId();
+        given(movies.existsById(movie.getId())).willReturn(true);
+
         Review expected = reviewWithoutId();
+        expected.setMovieId(movie.getId());
         String expectedJson = toJson(expected);
         given(reviews.save(Mockito.any())).willReturn(expected);
 
@@ -131,6 +135,18 @@ class CollectionControllerTest {
                         .content(expectedJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(expected.getTitle()));
+    }
+
+    @Test
+    void addNewReviewMovieNotFound() throws Exception {
+        Review expected = reviewWithoutId();
+        String expectedJson = toJson(expected);
+        given(movies.existsById(Mockito.any())).willReturn(false);
+
+        mvc.perform(MockMvcRequestBuilders.post("/reviews")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(expectedJson))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -147,8 +163,12 @@ class CollectionControllerTest {
 
     @Test
     void updateReview() throws Exception {
+        Movie movie = movieWithId();
+        given(movies.findById(movie.getId())).willReturn(Optional.of(movie));
+
         Review existing = reviewWithId();
         Review updated = reviewWithId();
+        updated.setMovieId(movie.getId());
         updated.setTitle("New Review Title!");
         updated.setBody("New Review Body");
         updated.setRating(10.0);

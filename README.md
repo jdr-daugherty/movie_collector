@@ -2,7 +2,7 @@
 
 Spring and TDD practice.
 
-##TODO List
+## TODO List
 - HATEOAS/HAL
 - Search (/search) to find movies in TMDB
 - Oauth2 authentication via Google Cloud

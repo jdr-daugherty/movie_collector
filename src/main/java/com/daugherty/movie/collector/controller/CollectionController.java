@@ -4,11 +4,10 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 import static com.daugherty.movie.collector.model.ReviewUpdater.apply;
@@ -30,28 +29,20 @@ public class CollectionController {
     }
 
     @GetMapping("/movies/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable long id) {
-        return movies.findById(id)
-                .map(m -> ResponseEntity.ok()
-                        .location(URI.create("/movies/" + id))
-                        .body(m))
-                .orElse(ResponseEntity.notFound().build());
+    public Movie getMovieById(@PathVariable long id) {
+        return movies.findById(id).orElseThrow(MovieNotFoundException::new);
     }
 
     @PostMapping("/movies")
-    public ResponseEntity<Movie> addNewMovie(@Valid @RequestBody Movie movie) {
-        Movie saved = movies.save(movie);
-        return ResponseEntity.created(URI.create("/movies/" + movie.getId()))
-                .body(saved);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Movie addNewMovie(@Valid @RequestBody Movie movie) {
+        return movies.save(movie);
     }
 
     @DeleteMapping("/movies/{id}")
-    public ResponseEntity<Movie> deleteMovie(@PathVariable long id) {
-        if (movies.existsById(id)) {
-            movies.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteMovie(@PathVariable long id) {
+        movies.deleteById(id);
     }
 
     @GetMapping("/reviews")
@@ -60,41 +51,29 @@ public class CollectionController {
     }
 
     @PostMapping("/reviews")
-    public ResponseEntity<Review> addNewReview(@Valid @RequestBody Review review) {
-        if (movies.existsById(review.getMovieId())) {
-            Review saved = reviews.save(review);
-            return ResponseEntity.created(URI.create("/reviews/" + review.getId()))
-                    .body(saved);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Review addNewReview(@Valid @RequestBody Review review) {
+        if (!movies.existsById(review.getMovieId())) {
+            throw new MovieNotFoundException();
         }
-        return ResponseEntity.notFound().build();
+        return reviews.save(review);
     }
 
     @GetMapping("/reviews/{id}")
-    public ResponseEntity<Review> getReviewById(@PathVariable long id) {
-        return reviews.findById(id)
-                .map(m -> ResponseEntity.ok()
-                        .location(URI.create("/reviews/" + id))
-                        .body(m))
-                .orElse(ResponseEntity.notFound().build());
+    public Review getReviewById(@PathVariable long id) {
+        return reviews.findById(id).orElseThrow(ReviewNotFoundException::new);
     }
 
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<Review> updateReview(@Valid @RequestBody Review updated,
-                                               @PathVariable long id) {
+    public Review updateReview(@Valid @RequestBody Review updated,
+                               @PathVariable long id) {
         return reviews.findById(id)
-                .map(existing -> apply(updated, existing))
-                .map(existing -> ResponseEntity.ok()
-                        .location(URI.create("/reviews/" + updated.getId()))
-                        .body(existing))
-                .orElse(ResponseEntity.notFound().build());
+                .map(existing -> reviews.save(apply(updated, existing)))
+                .orElseThrow(ReviewNotFoundException::new);
     }
 
     @DeleteMapping("/reviews/{id}")
-    public ResponseEntity<Review> deleteReview(@PathVariable long id) {
-        if (reviews.existsById(id)) {
-            reviews.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+    public void deleteReview(@PathVariable long id) {
+        reviews.deleteById(id);
     }
 }

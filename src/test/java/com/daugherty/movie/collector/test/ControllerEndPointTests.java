@@ -42,7 +42,7 @@ public class ControllerEndPointTests {
     @Test
     public void getMovieById() throws Exception {
         Movie expected = TestObjectMother.movieWithId();
-        given(controller.getMovieById(expected.getId())).willReturn(ResponseEntity.ok(expected));
+        given(controller.getMovieById(expected.getId())).willReturn(expected);
 
         mvc.perform(get("/movies/" + expected.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -62,7 +62,7 @@ public class ControllerEndPointTests {
     @Test
     public void getReviewById() throws Exception {
         Review expected = TestObjectMother.reviewWithId();
-        given(controller.getReviewById(expected.getId())).willReturn(ResponseEntity.ok(expected));
+        given(controller.getReviewById(expected.getId())).willReturn(expected);
 
         mvc.perform(get("/reviews/" + expected.getId()).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

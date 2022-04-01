@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.CollectionModel;
@@ -114,6 +115,19 @@ class CollectionControllerTest {
         given(reviews.findAll()).willReturn(expected);
 
         CollectionModel<Review> allReviews = controller.getAllReviews();
+
+        assertFalse(allReviews.getLinks("self").isEmpty());
+        allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));
+
+        assertIterableEquals(expected, allReviews.getContent());
+    }
+
+    @Test
+    void findReviewsByMovieId() {
+        List<Review> expected = List.of(reviewWithId());
+        given(reviews.findByMovieId(2)).willReturn(expected);
+
+        CollectionModel<Review> allReviews = controller.findReviewsByMovieId(2);
 
         assertFalse(allReviews.getLinks("self").isEmpty());
         allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));

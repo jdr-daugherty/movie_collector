@@ -68,8 +68,16 @@ public class CollectionController {
                 linkTo(methodOn(CollectionController.class).getAllReviews()).withSelfRel());
     }
 
-    // TODO: Remove the Review parameter to addNewReview and replace it with explicit parameters.
+    @Operation(summary = "Get the list of movie reviews for a given movie")
+    @GetMapping(value = "/movies/{movieId}/reviews", produces = {"application/hal+json"})
+    public CollectionModel<Review> findReviewsByMovieId(@PathVariable long movieId) {
+        return CollectionModel.of(reviews.findByMovieId(movieId).stream()
+                        .map(CollectionController::addLinks)
+                        .collect(Collectors.toList()),
+                linkTo(methodOn(CollectionController.class).getAllReviews()).withSelfRel());
+    }
 
+    // TODO: Remove the Review parameter to addNewReview and replace it with explicit parameters.
     @Operation(summary = "Add a new movie review")
     @PostMapping(value = "/reviews", produces = {"application/hal+json"})
     @ResponseStatus(HttpStatus.CREATED)

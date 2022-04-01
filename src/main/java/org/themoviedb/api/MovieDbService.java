@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -45,7 +46,7 @@ public class MovieDbService {
                     rest().getForEntity(moviesByQueryUri(query), TmdbMovieList.class);
 
             if (entity.getStatusCode().is2xxSuccessful()) {
-                return entity.getBody().getResults();
+                return Objects.requireNonNull(entity.getBody()).getResults();
             }
         } catch (URISyntaxException e) {
             log.error("Query URI creation failed for '" + query + "'", e);

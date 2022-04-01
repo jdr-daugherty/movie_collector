@@ -3,8 +3,6 @@ package com.daugherty.movie.collector.test;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 
-import java.util.List;
-
 public final class TestObjectMother {
 
     public static Review reviewWithId() {
@@ -25,17 +23,5 @@ public final class TestObjectMother {
 
     public static Movie movieWithoutId() {
         return new Movie("Reservoir Dogs", 500);
-    }
-
-    public static List<Review> listOfReviews() {
-        return List.of(
-                new Review("This movie is great!", 2345),
-                new Review("Excellent Film!", 2456));
-    }
-
-    public static List<Movie> listOfMovies() {
-        return List.of(
-                new Movie("Reservoir Dogs", 500),
-                new Movie("Murder She Said", 750));
     }
 }

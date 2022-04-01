@@ -1,5 +1,8 @@
 package com.daugherty.movie.collector.controller;
 
+import com.daugherty.movie.collector.dto.DtoConverter;
+import com.daugherty.movie.collector.dto.MovieDto;
+import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
@@ -22,13 +25,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class CollectionController {
 
+    private final DtoConverter dtoConverter = new DtoConverter();
+
     private final Movies movies;
     private final Reviews reviews;
 
     @Operation(summary = "Get the full list of movies")
     @GetMapping(value = "/movies", produces = {"application/hal+json"})
-    public CollectionModel<Movie> getAllMovies() {
+    public CollectionModel<MovieDto> getAllMovies() {
         return CollectionModel.of(movies.findAll().stream()
+                        .map(dtoConverter::toDto)
                         .map(CollectionController::addLinks)
                         .collect(Collectors.toList()),
                 linkTo(methodOn(CollectionController.class).getAllMovies()).withSelfRel());
@@ -36,8 +42,9 @@ public class CollectionController {
 
     @Operation(summary = "Get a movie by its id")
     @GetMapping(value = "/movies/{id}", produces = {"application/hal+json"})
-    public Movie getMovieById(@PathVariable long id) {
+    public MovieDto getMovieById(@PathVariable long id) {
         return movies.findById(id)
+                .map(dtoConverter::toDto)
                 .map(CollectionController::addLinks)
                 .orElseThrow(MovieNotFoundException::new);
     }
@@ -45,8 +52,9 @@ public class CollectionController {
     @Operation(summary = "Add a new movie")
     @PostMapping(value = "/movies", produces = {"application/hal+json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Movie addNewMovie(@Valid @RequestBody Movie movie) {
-        return addLinks(movies.save(movie));
+    public MovieDto addNewMovie(@Valid @RequestBody MovieDto movieDto) {
+        Movie movie = movies.save(dtoConverter.toModel(movieDto));
+        return addLinks(dtoConverter.toDto(movie));
     }
 
     @Operation(summary = "Delete the movie with the given id")
@@ -58,8 +66,9 @@ public class CollectionController {
 
     @Operation(summary = "Get the full list of movie reviews")
     @GetMapping(value = "/reviews", produces = {"application/hal+json"})
-    public CollectionModel<Review> getAllReviews() {
+    public CollectionModel<ReviewDto> getAllReviews() {
         return CollectionModel.of(reviews.findAll().stream()
+                        .map(dtoConverter::toDto)
                         .map(CollectionController::addLinks)
                         .collect(Collectors.toList()),
                 linkTo(methodOn(CollectionController.class).getAllReviews()).withSelfRel());
@@ -67,8 +76,9 @@ public class CollectionController {
 
     @Operation(summary = "Get the list of movie reviews for a given movie")
     @GetMapping(value = "/movies/{movieId}/reviews", produces = {"application/hal+json"})
-    public CollectionModel<Review> findReviewsByMovieId(@PathVariable long movieId) {
+    public CollectionModel<ReviewDto> findReviewsByMovieId(@PathVariable long movieId) {
         return CollectionModel.of(reviews.findByMovieId(movieId).stream()
+                        .map(dtoConverter::toDto)
                         .map(CollectionController::addLinks)
                         .collect(Collectors.toList()),
                 linkTo(methodOn(CollectionController.class).getAllReviews()).withSelfRel());
@@ -78,17 +88,19 @@ public class CollectionController {
     @Operation(summary = "Add a new movie review")
     @PostMapping(value = "/reviews", produces = {"application/hal+json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public Review addNewReview(@Valid @RequestBody Review review) {
-        if (!movies.existsById(review.getMovieId())) {
+    public ReviewDto addNewReview(@Valid @RequestBody ReviewDto reviewDto) {
+        if (!movies.existsById(reviewDto.getMovieId())) {
             throw new MovieNotFoundException();
         }
-        return addLinks(reviews.save(review));
+        Review review = reviews.save(dtoConverter.toModel(reviewDto));
+        return addLinks(dtoConverter.toDto(review));
     }
 
     @Operation(summary = "Get a review by its id")
     @GetMapping(value = "/reviews/{id}", produces = {"application/hal+json"})
-    public Review getReviewById(@PathVariable long id) {
+    public ReviewDto getReviewById(@PathVariable long id) {
         return reviews.findById(id)
+                .map(dtoConverter::toDto)
                 .map(CollectionController::addLinks)
                 .orElseThrow(ReviewNotFoundException::new);
     }
@@ -96,10 +108,11 @@ public class CollectionController {
     // TODO: Remove the Review parameter to updateReview and replace it with explicit parameters.
     @Operation(summary = "Update the details of a review")
     @PutMapping(value = "/reviews/{id}", produces = {"application/hal+json"})
-    public Review updateReview(@Valid @RequestBody Review updated,
+    public ReviewDto updateReview(@Valid @RequestBody ReviewDto updated,
                                @PathVariable long id) {
         return reviews.findById(id)
                 .map(existing -> reviews.save(apply(updated, existing)))
+                .map(dtoConverter::toDto)
                 .map(CollectionController::addLinks)
                 .orElseThrow(ReviewNotFoundException::new);
     }
@@ -111,12 +124,12 @@ public class CollectionController {
         return ResponseEntity.ok().build();
     }
 
-    private static Movie addLinks(Movie movie) {
+    private static MovieDto addLinks(MovieDto movie) {
         movie.add(linkTo(methodOn(CollectionController.class).getMovieById(movie.getId())).withSelfRel());
         return movie;
     }
 
-    private static Review addLinks(Review review) {
+    private static ReviewDto addLinks(ReviewDto review) {
         review.add(linkTo(methodOn(CollectionController.class).getReviewById(review.getId())).withSelfRel());
         return review;
     }

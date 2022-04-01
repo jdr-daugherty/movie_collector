@@ -1,8 +1,10 @@
 package com.daugherty.movie.collector.model;
 
+import com.daugherty.movie.collector.dto.ReviewDto;
+
 public final class ReviewUpdater {
 
-    public static Review apply(Review source, Review target) {
+    public static Review apply(ReviewDto source, Review target) {
         if (source.getTitle() != null) {
             target.setTitle(source.getTitle());
         }

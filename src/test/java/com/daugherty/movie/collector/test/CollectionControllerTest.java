@@ -3,6 +3,9 @@ package com.daugherty.movie.collector.test;
 import com.daugherty.movie.collector.controller.CollectionController;
 import com.daugherty.movie.collector.controller.MovieNotFoundException;
 import com.daugherty.movie.collector.controller.ReviewNotFoundException;
+import com.daugherty.movie.collector.dto.DtoConverter;
+import com.daugherty.movie.collector.dto.MovieDto;
+import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
@@ -14,7 +17,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.CollectionModel;
@@ -57,12 +59,15 @@ class CollectionControllerTest {
         List<Movie> expected = List.of(movieWithId());
         given(movies.findAll()).willReturn(expected);
 
-        CollectionModel<Movie> allMovies = controller.getAllMovies();
+        CollectionModel<MovieDto> allMovies = controller.getAllMovies();
 
         assertFalse(allMovies.getLinks("self").isEmpty());
         allMovies.getContent().forEach(m -> assertFalse(m.getLinks("self").isEmpty()));
 
-        assertIterableEquals(expected, allMovies);
+        MovieDto result = allMovies.getContent().iterator().next();
+        assertEquals(expected.get(0).getId(), result.getId());
+        assertEquals(expected.get(0).getTitle(), result.getTitle());
+        assertEquals(expected.get(0).getTmdbId(), result.getTmdbId());
     }
 
     @Test
@@ -70,10 +75,12 @@ class CollectionControllerTest {
         Movie expected = movieWithId();
         given(movies.findById(expected.getId())).willReturn(Optional.of(expected));
 
-        Movie movieById = controller.getMovieById(expected.getId());
+        MovieDto result = controller.getMovieById(expected.getId());
 
-        assertFalse(movieById.getLinks("self").isEmpty());
-        assertEquals(expected, movieById);
+        assertFalse(result.getLinks("self").isEmpty());
+        assertEquals(expected.getId(), result.getId());
+        assertEquals(expected.getTitle(), result.getTitle());
+        assertEquals(expected.getTmdbId(), result.getTmdbId());
     }
 
     @Test
@@ -114,12 +121,13 @@ class CollectionControllerTest {
         List<Review> expected = List.of(reviewWithId());
         given(reviews.findAll()).willReturn(expected);
 
-        CollectionModel<Review> allReviews = controller.getAllReviews();
+        CollectionModel<ReviewDto> allReviews = controller.getAllReviews();
 
         assertFalse(allReviews.getLinks("self").isEmpty());
         allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));
 
-        assertIterableEquals(expected, allReviews.getContent());
+        ReviewDto result = allReviews.getContent().iterator().next();
+        assertEquals(expected.get(0).getTitle(), result.getTitle());
     }
 
     @Test
@@ -127,12 +135,13 @@ class CollectionControllerTest {
         List<Review> expected = List.of(reviewWithId());
         given(reviews.findByMovieId(2)).willReturn(expected);
 
-        CollectionModel<Review> allReviews = controller.findReviewsByMovieId(2);
+        CollectionModel<ReviewDto> allReviews = controller.findReviewsByMovieId(2);
 
         assertFalse(allReviews.getLinks("self").isEmpty());
         allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));
 
-        assertIterableEquals(expected, allReviews.getContent());
+        ReviewDto result = allReviews.getContent().iterator().next();
+        assertEquals(expected.get(0).getTitle(), result.getTitle());
     }
 
     @Test
@@ -146,10 +155,11 @@ class CollectionControllerTest {
         Review expected = reviewWithId();
         given(reviews.findById(expected.getId())).willReturn(Optional.of(expected));
 
-        Review reviewById = controller.getReviewById(expected.getId());
+        ReviewDto result = controller.getReviewById(expected.getId());
 
-        assertFalse(reviewById.getLinks("self").isEmpty());
-        assertEquals(expected, reviewById);
+        assertFalse(result.getLinks("self").isEmpty());
+
+        assertEquals(expected.getTitle(), result.getTitle());
     }
 
     @Test
@@ -159,7 +169,7 @@ class CollectionControllerTest {
 
         Review expected = reviewWithoutId();
         expected.setMovieId(movie.getId());
-        String expectedJson = toJson(expected);
+        String expectedJson = toJson(new DtoConverter().toDto(expected));
         given(reviews.save(Mockito.any())).willReturn(expected);
 
         mvc.perform(MockMvcRequestBuilders.post("/reviews")

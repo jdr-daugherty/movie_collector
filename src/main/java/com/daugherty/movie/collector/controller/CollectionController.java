@@ -5,6 +5,7 @@ import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +19,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequiredArgsConstructor
 public class CollectionController {
 
     private final Movies movies;
     private final Reviews reviews;
-
-    public CollectionController(Movies movies, Reviews reviews) {
-        this.movies = movies;
-        this.reviews = reviews;
-    }
 
     @Operation(summary = "Get the full list of movies")
     @GetMapping(value = "/movies", produces = {"application/hal+json"})

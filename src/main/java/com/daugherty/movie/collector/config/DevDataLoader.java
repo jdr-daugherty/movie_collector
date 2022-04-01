@@ -4,6 +4,7 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -11,15 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Profile("dev")
 @Component
+@RequiredArgsConstructor
 public class DevDataLoader implements ApplicationRunner {
 
     private final Movies movies;
     private final Reviews reviews;
-
-    public DevDataLoader(Movies movies, Reviews reviews) {
-        this.movies = movies;
-        this.reviews = reviews;
-    }
 
     @Override
     public void run(ApplicationArguments args) {

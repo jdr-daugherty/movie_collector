@@ -1,5 +1,6 @@
 package org.themoviedb.api;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,10 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MovieDbService {
 
     private final ServiceProps props;
-
-    public MovieDbService(ServiceProps props) {
-        this.props = props;
-    }
 
     @Bean
     private RestTemplate rest() {

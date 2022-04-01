@@ -1,4 +1,4 @@
-package org.themoviedb.api.dta;
+package org.themoviedb.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

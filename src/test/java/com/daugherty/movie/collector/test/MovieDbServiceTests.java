@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.themoviedb.api.MovieDbService;
-import org.themoviedb.api.dta.TmdbMovie;
+import org.themoviedb.api.dto.TmdbMovie;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class MovieDbServiceTests {
     @Test
     public void findReservoirDogsByQuery() {
         List<TmdbMovie> list = movieDbService.findMovies("Reservoir Dogs");
-        assertTrue(containsMovie(list, 500));
+        assertTrue(list.stream().anyMatch(m -> m.getId() == 500));
     }
 
     @Test
@@ -39,9 +39,5 @@ public class MovieDbServiceTests {
         Optional<TmdbMovie> result = movieDbService.getMovieByTitle("Reservoir Dogs");
         assertTrue(result.isPresent());
         assertEquals(500, result.get().getId());
-    }
-
-    private boolean containsMovie(List<TmdbMovie> list, long movieId) {
-        return list.stream().anyMatch(m -> m.getId() == movieId);
     }
 }

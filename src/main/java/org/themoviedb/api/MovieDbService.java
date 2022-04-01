@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.themoviedb.api.dta.TmdbMovie;
-import org.themoviedb.api.dta.TmdbMovieList;
+import org.themoviedb.api.dto.TmdbMovie;
+import org.themoviedb.api.dto.TmdbMovieList;
 
 import java.net.URI;
 import java.net.URISyntaxException;

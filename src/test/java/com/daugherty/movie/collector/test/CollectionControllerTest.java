@@ -190,7 +190,7 @@ class CollectionControllerTest {
         updated.setMovieId(movie.getId());
         updated.setTitle("New Review Title!");
         updated.setBody("New Review Body");
-        updated.setRating(10.0);
+        updated.setRating(10);
         String updatedJson = toJson(updated);
 
         given(reviews.findById(existing.getId())).willReturn(Optional.of(existing));

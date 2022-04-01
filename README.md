@@ -3,7 +3,6 @@
 Spring and TDD practice.
 
 ## TODO List
-- Explicit DTOs using ModelMapper
 - Details (/details) that combines Movie, Review, and TMDB details
 - Search (/search) to find movies in TMDB
 - Oauth2 authentication via Google Cloud

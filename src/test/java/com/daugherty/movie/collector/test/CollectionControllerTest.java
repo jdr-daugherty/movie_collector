@@ -4,6 +4,7 @@ import com.daugherty.movie.collector.controller.CollectionController;
 import com.daugherty.movie.collector.controller.MovieNotFoundException;
 import com.daugherty.movie.collector.controller.ReviewNotFoundException;
 import com.daugherty.movie.collector.dto.DtoConverter;
+import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
@@ -23,6 +24,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.themoviedb.api.MovieDbService;
+import org.themoviedb.api.dto.TmdbMovie;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +48,9 @@ class CollectionControllerTest {
 
     @MockBean
     private Reviews reviews;
+
+    @MockBean
+    private MovieDbService movieDbService;
 
     @Autowired
     private CollectionController controller;
@@ -81,6 +87,36 @@ class CollectionControllerTest {
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
         assertEquals(expected.getTmdbId(), result.getTmdbId());
+    }
+
+    @Test
+    void getMovieDetails() {
+        TmdbMovie tmdbMovie = tmdbMovie();
+
+        Movie movie = movieWithId();
+        movie.setTmdbId(tmdbMovie.getId());
+        movie.setTitle(tmdbMovie.getTitle());
+
+        Review review = reviewWithId();
+        review.setMovieId(movie.getId());
+
+        given(movies.findById(movie.getId())).willReturn(Optional.of(movie));
+        given(reviews.findByMovieId(movie.getId())).willReturn(List.of(review));
+        given(movieDbService.getMovieById(movie.getTmdbId())).willReturn(Optional.of(tmdbMovie));
+
+        MovieDetailsDto dto = controller.getMovieDetails(movie.getId());
+
+        // verify movie included
+        assertEquals(movie.getId(), dto.getId());
+        assertEquals(movie.getTitle(), dto.getTitle());
+
+        // verify TMDB info included
+        assertEquals(tmdbMovie.getTagline(), dto.getTagline());
+        assertEquals(tmdbMovie.getTagline(), dto.getTagline());
+
+        // verify review included
+        assertEquals(1, dto.getReviews().size());
+        assertEquals(review.getTitle(), dto.getReviews().get(0).getTitle());
     }
 
     @Test

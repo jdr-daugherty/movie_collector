@@ -1,6 +1,7 @@
 package com.daugherty.movie.collector.controller;
 
 import com.daugherty.movie.collector.dto.DtoConverter;
+import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
@@ -13,8 +14,11 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.themoviedb.api.MovieDbService;
+import org.themoviedb.api.dto.TmdbMovie;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.daugherty.movie.collector.model.ReviewUpdater.apply;
@@ -29,6 +33,7 @@ public class CollectionController {
 
     private final Movies movies;
     private final Reviews reviews;
+    private final MovieDbService movieDbService;
 
     @Operation(summary = "Get the full list of movies")
     @GetMapping(value = "/movies", produces = {"application/hal+json"})
@@ -82,6 +87,15 @@ public class CollectionController {
                         .map(CollectionController::addLinks)
                         .collect(Collectors.toList()),
                 linkTo(methodOn(CollectionController.class).getAllReviews()).withSelfRel());
+    }
+
+    @Operation(summary = "Get the full details of the given movie")
+    @GetMapping(value = "/movies/{movieId}/details", produces = {"application/hal+json"})
+    public MovieDetailsDto getMovieDetails(@PathVariable long movieId) {
+        Movie movie = movies.findById(movieId).orElseThrow(MovieNotFoundException::new);
+        TmdbMovie tmdbMovie = movieDbService.getMovieById(movie.getTmdbId()).orElseThrow(MovieNotFoundException::new);
+        List<Review> reviewList = reviews.findByMovieId(movieId);
+        return dtoConverter.toDetailsDto(movie, reviewList, tmdbMovie);
     }
 
     // TODO: Remove the Review parameter to addNewReview and replace it with explicit parameters.

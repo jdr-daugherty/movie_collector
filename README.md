@@ -3,6 +3,7 @@
 Spring and TDD practice.
 
 ## TODO List
+- Split controller end-point tests into a separate class and fill out the gaps that creates.
 - Search (/search?query=) to find movies in TMDB
 - Oauth2 authentication via Google Cloud
 - Users with reviews and movies stored by user.

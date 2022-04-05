@@ -7,9 +7,6 @@ import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.themoviedb.api.dto.TmdbMovie;
 
 import java.util.List;
@@ -17,18 +14,14 @@ import java.util.List;
 import static com.daugherty.movie.collector.test.TestObjectMother.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
 public class DtoConverterTests {
 
-    @Bean
-    private DtoConverter dtoConverter() {
-        return new DtoConverter();
-    }
+    private static final DtoConverter dtoConverter = new DtoConverter();
 
     @Test
     void reviewToDto() {
         Review expected = reviewWithId();
-        ReviewDto result = dtoConverter().toDto(expected);
+        ReviewDto result = dtoConverter.toDto(expected);
 
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
@@ -40,8 +33,8 @@ public class DtoConverterTests {
     @Test
     void reviewToModel() {
         Review expected = reviewWithId();
-        ReviewDto intermediate = dtoConverter().toDto(expected);
-        Review result = dtoConverter().toModel(intermediate);
+        ReviewDto intermediate = dtoConverter.toDto(expected);
+        Review result = dtoConverter.toModel(intermediate);
 
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
@@ -53,7 +46,7 @@ public class DtoConverterTests {
     @Test
     void movieToDto() {
         Movie expected = movieWithId();
-        MovieDto result = dtoConverter().toDto(expected);
+        MovieDto result = dtoConverter.toDto(expected);
 
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
@@ -63,8 +56,8 @@ public class DtoConverterTests {
     @Test
     void movieToModel() {
         Movie expected = movieWithId();
-        MovieDto intermediate = dtoConverter().toDto(expected);
-        Movie result = dtoConverter().toModel(intermediate);
+        MovieDto intermediate = dtoConverter.toDto(expected);
+        Movie result = dtoConverter.toModel(intermediate);
 
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
@@ -82,7 +75,7 @@ public class DtoConverterTests {
         Review review = reviewWithId();
         review.setMovieId(movie.getId());
 
-        MovieDetailsDto dto = dtoConverter().toDetailsDto(movie, List.of(review), tmdbMovie);
+        MovieDetailsDto dto = dtoConverter.toDetailsDto(movie, List.of(review), tmdbMovie);
 
         assertEquals(movie.getId(), dto.getId());
         assertEquals(movie.getTitle(), dto.getTitle());

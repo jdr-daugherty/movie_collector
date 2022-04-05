@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -57,7 +56,7 @@ class CollectionControllerTest {
 
     @Test
     void getAllMoviesWithNoMovies() {
-        assertTrue(controller.getAllMovies().getContent().isEmpty());
+        assertTrue(controller.getAllMovies().isEmpty());
     }
 
     @Test
@@ -65,12 +64,9 @@ class CollectionControllerTest {
         List<Movie> expected = List.of(movieWithId());
         given(movies.findAll()).willReturn(expected);
 
-        CollectionModel<MovieDto> allMovies = controller.getAllMovies();
+        List<MovieDto> allMovies = controller.getAllMovies();
 
-        assertFalse(allMovies.getLinks("self").isEmpty());
-        allMovies.getContent().forEach(m -> assertFalse(m.getLinks("self").isEmpty()));
-
-        MovieDto result = allMovies.getContent().iterator().next();
+        MovieDto result = allMovies.get(0);
         assertEquals(expected.get(0).getId(), result.getId());
         assertEquals(expected.get(0).getTitle(), result.getTitle());
         assertEquals(expected.get(0).getTmdbId(), result.getTmdbId());
@@ -83,7 +79,6 @@ class CollectionControllerTest {
 
         MovieDto result = controller.getMovieById(expected.getId());
 
-        assertFalse(result.getLinks("self").isEmpty());
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
         assertEquals(expected.getTmdbId(), result.getTmdbId());
@@ -135,8 +130,7 @@ class CollectionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(expectedJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(expected.getTitle()))
-                .andExpect(jsonPath("_links.self.href").exists());
+                .andExpect(jsonPath("$.title").value(expected.getTitle()));
     }
 
     @Test
@@ -149,7 +143,7 @@ class CollectionControllerTest {
 
     @Test
     void getAllReviewsWithNoReviews() {
-        assertTrue(controller.getAllReviews().getContent().isEmpty());
+        assertTrue(controller.getAllReviews().isEmpty());
     }
 
     @Test
@@ -157,12 +151,9 @@ class CollectionControllerTest {
         List<Review> expected = List.of(reviewWithId());
         given(reviews.findAll()).willReturn(expected);
 
-        CollectionModel<ReviewDto> allReviews = controller.getAllReviews();
+        List<ReviewDto> allReviews = controller.getAllReviews();
 
-        assertFalse(allReviews.getLinks("self").isEmpty());
-        allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));
-
-        ReviewDto result = allReviews.getContent().iterator().next();
+        ReviewDto result = allReviews.get(0);
         assertEquals(expected.get(0).getTitle(), result.getTitle());
     }
 
@@ -171,12 +162,9 @@ class CollectionControllerTest {
         List<Review> expected = List.of(reviewWithId());
         given(reviews.findByMovieId(2)).willReturn(expected);
 
-        CollectionModel<ReviewDto> allReviews = controller.findReviewsByMovieId(2);
+        List<ReviewDto> allReviews = controller.findReviewsByMovieId(2);
 
-        assertFalse(allReviews.getLinks("self").isEmpty());
-        allReviews.getContent().forEach(r -> assertFalse(r.getLinks("self").isEmpty()));
-
-        ReviewDto result = allReviews.getContent().iterator().next();
+        ReviewDto result = allReviews.get(0);
         assertEquals(expected.get(0).getTitle(), result.getTitle());
     }
 
@@ -192,8 +180,6 @@ class CollectionControllerTest {
         given(reviews.findById(expected.getId())).willReturn(Optional.of(expected));
 
         ReviewDto result = controller.getReviewById(expected.getId());
-
-        assertFalse(result.getLinks("self").isEmpty());
 
         assertEquals(expected.getTitle(), result.getTitle());
     }
@@ -212,8 +198,7 @@ class CollectionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(expectedJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(expected.getTitle()))
-                .andExpect(jsonPath("_links.self.href").exists());
+                .andExpect(jsonPath("$.title").value(expected.getTitle()));
     }
 
     @Test
@@ -262,8 +247,7 @@ class CollectionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(updated.getTitle()))
                 .andExpect(jsonPath("$.body").value(updated.getBody()))
-                .andExpect(jsonPath("$.rating").value(updated.getRating()))
-                .andExpect(jsonPath("_links.self.href").exists());
+                .andExpect(jsonPath("$.rating").value(updated.getRating()));
     }
 
     @Test

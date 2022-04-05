@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -18,8 +16,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-@Relation(itemRelation = "review", collectionRelation = "reviews")
-public class ReviewDto extends RepresentationModel<ReviewDto> {
+public class ReviewDto {
 
     private long id;
 

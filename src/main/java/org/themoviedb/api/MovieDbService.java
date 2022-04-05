@@ -2,7 +2,6 @@ package org.themoviedb.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,16 +20,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MovieDbService {
 
+    private final RestTemplate rest = new RestTemplate();
     private final ServiceProps props;
-
-    @Bean
-    private RestTemplate rest() {
-        return new RestTemplate();
-    }
 
     public Optional<TmdbMovie> getMovieById(long id) {
         ResponseEntity<TmdbMovie> entity =
-                rest().getForEntity(movieByIdUri(id), TmdbMovie.class);
+                rest.getForEntity(movieByIdUri(id), TmdbMovie.class);
 
         if (entity.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(entity.getBody());
@@ -41,7 +36,7 @@ public class MovieDbService {
     public List<TmdbMovie> findMovies(String query) {
         try {
             ResponseEntity<TmdbMovieList> entity =
-                    rest().getForEntity(moviesByQueryUri(query), TmdbMovieList.class);
+                    rest.getForEntity(moviesByQueryUri(query), TmdbMovieList.class);
 
             if (entity.getStatusCode().is2xxSuccessful()) {
                 return Objects.requireNonNull(entity.getBody()).getResults();

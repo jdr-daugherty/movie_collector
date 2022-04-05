@@ -3,7 +3,6 @@
 Spring and TDD practice.
 
 ## TODO List
-- Remove HAL/HATEOAS handling
 - Search (/search?query=) to find movies in TMDB
 - Oauth2 authentication via Google Cloud
 - Users with reviews and movies stored by user.

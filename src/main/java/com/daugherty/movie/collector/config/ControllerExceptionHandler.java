@@ -1,5 +1,7 @@
-package com.daugherty.movie.collector.controller;
+package com.daugherty.movie.collector.config;
 
+import com.daugherty.movie.collector.exception.MovieNotFoundException;
+import com.daugherty.movie.collector.exception.ReviewNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -10,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @ControllerAdvice
-public class CollectionControllerAdvice {
+public class ControllerExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(MovieNotFoundException.class)

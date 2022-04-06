@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.controller;
+package com.daugherty.movie.collector.exception;
 
 public class MovieNotFoundException extends RuntimeException {
     public MovieNotFoundException(String message) {

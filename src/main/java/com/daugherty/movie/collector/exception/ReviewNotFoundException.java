@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.controller;
+package com.daugherty.movie.collector.exception;
 
 public class ReviewNotFoundException extends RuntimeException {
     public ReviewNotFoundException(String message) {

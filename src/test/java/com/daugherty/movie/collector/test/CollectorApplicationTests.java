@@ -1,6 +1,6 @@
 package com.daugherty.movie.collector.test;
 
-import com.daugherty.movie.collector.controller.CollectionController;
+import com.daugherty.movie.collector.controller.MoviesController;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ class CollectorApplicationTests {
     private Reviews reviews;
 
     @Autowired
-    private CollectionController controller;
+    private MoviesController controller;
 
     @Test
     void contextLoads() {

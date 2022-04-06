@@ -62,14 +62,6 @@ public class CollectionController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Get the full list of movie reviews")
-    @GetMapping(value = "/reviews")
-    public List<ReviewDto> getAllReviews() {
-        return reviews.findAll().stream()
-                        .map(dtoConverter::toDto)
-                        .collect(Collectors.toList());
-    }
-
     @Operation(summary = "Get the list of movie reviews for a given movie")
     @GetMapping(value = "/movies/{movieId}/reviews")
     public List<ReviewDto> findReviewsByMovieId(@PathVariable long movieId) {
@@ -85,6 +77,14 @@ public class CollectionController {
         TmdbMovie tmdbMovie = movieDbService.getMovieById(movie.getTmdbId()).orElseThrow(MovieNotFoundException::new);
         List<Review> reviewList = reviews.findByMovieId(movieId);
         return dtoConverter.toDetailsDto(movie, reviewList, tmdbMovie);
+    }
+
+    @Operation(summary = "Get the full list of movie reviews")
+    @GetMapping(value = "/reviews")
+    public List<ReviewDto> getAllReviews() {
+        return reviews.findAll().stream()
+                .map(dtoConverter::toDto)
+                .collect(Collectors.toList());
     }
 
     // TODO: Remove the Review parameter to addNewReview and replace it with explicit parameters.

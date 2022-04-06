@@ -3,6 +3,7 @@ package com.daugherty.movie.collector.test;
 import com.daugherty.movie.collector.controller.CollectionController;
 import com.daugherty.movie.collector.controller.MovieNotFoundException;
 import com.daugherty.movie.collector.controller.ReviewNotFoundException;
+import com.daugherty.movie.collector.dto.DtoConverter;
 import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewDto;
@@ -10,30 +11,31 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.themoviedb.api.MovieDbService;
 import org.themoviedb.api.dto.TmdbMovie;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import static com.daugherty.movie.collector.test.TestObjectMother.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
 class CollectionControllerTests {
+
+    private final DtoConverter converter = new DtoConverter();
 
     @MockBean
     private Movies movies;
@@ -121,19 +123,18 @@ class CollectionControllerTests {
                 () -> controller.getMovieById(Long.MIN_VALUE));
     }
 
-//    @Test
-//    void addNewMovie() throws Exception {
-//        Movie expected = movieWithoutId();
-//        String expectedJson = toJson(expected);
-//        when(movies.save(Mockito.any())).willReturn(expected);
-//
-//        mvc.perform(MockMvcRequestBuilders.post("/movies")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(expectedJson))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.title").value(expected.getTitle()));
-//    }
-//
+    @Test
+    void addNewMovie() {
+        Movie expected = movieWithoutId();
+        MovieDto expectedDto = converter.toDto(expected);
+        when(movies.save(Mockito.any())).thenReturn(expected);
+
+        MovieDto result = controller.addNewMovie(expectedDto);
+        verify(movies, times(1)).save(Mockito.any());
+
+        assertEquals(expectedDto, result);
+    }
+
     @Test
     void deleteMovie() {
         final long movieId = 1234L;
@@ -192,81 +193,74 @@ class CollectionControllerTests {
         assertEquals(expected.getTitle(), result.getTitle());
     }
 
-//    @Test
-//    void addNewReview() throws Exception {
-//        Movie movie = movieWithId();
-//        when(movies.existsById(movie.getId())).willReturn(true);
-//
-//        Review expected = reviewWithoutId();
-//        expected.setMovieId(movie.getId());
-//        String expectedJson = toJson(new DtoConverter().toDto(expected));
-//        when(reviews.save(Mockito.any())).willReturn(expected);
-//
-//        mvc.perform(MockMvcRequestBuilders.post("/reviews")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(expectedJson))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.title").value(expected.getTitle()));
-//    }
-//
-//    @Test
-//    void addNewReviewMovieNotFound() throws Exception {
-//        Review expected = reviewWithoutId();
-//        String expectedJson = toJson(expected);
-//        when(movies.existsById(Mockito.any())).willReturn(false);
-//
-//        mvc.perform(MockMvcRequestBuilders.post("/reviews")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(expectedJson))
-//                .andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    void updateReviewNotFound() throws Exception {
-//        Review updated = reviewWithId();
-//        String updatedJson = toJson(updated);
-//        when(reviews.findById(Mockito.any())).willReturn(Optional.empty());
-//
-//        mvc.perform(MockMvcRequestBuilders.put("/reviews/" + updated.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(updatedJson))
-//                .andExpect(status().isNotFound());
-//    }
+    @Test
+    void addNewReview() {
+        Movie movie = movieWithId();
+        when(movies.existsById(movie.getId())).thenReturn(true);
 
-//    @Test
-//    void updateReview() throws Exception {
-//        Movie movie = movieWithId();
-//        when(movies.findById(movie.getId())).willReturn(Optional.of(movie));
-//
-//        Review existing = reviewWithId();
-//        Review updated = reviewWithId();
-//        updated.setMovieId(movie.getId());
-//        updated.setTitle("New Review Title!");
-//        updated.setBody("New Review Body");
-//        updated.setRating(10);
-//        String updatedJson = toJson(updated);
-//
-//        when(reviews.findById(existing.getId())).willReturn(Optional.of(existing));
-//        when(reviews.save(Mockito.any())).willReturn(updated);
-//
-//        mvc.perform(MockMvcRequestBuilders.put("/reviews/" + existing.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(updatedJson))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.title").value(updated.getTitle()))
-//                .andExpect(jsonPath("$.body").value(updated.getBody()))
-//                .andExpect(jsonPath("$.rating").value(updated.getRating()));
-//    }
+        Review expected = reviewWithoutId();
+        expected.setMovieId(movie.getId());
+        expected.setReviewed(new Date());
 
-//    @Test
-//    void deleteReview() throws Exception {
-//        when(reviews.existsById(1234L)).willReturn(true);
-//
-//        mvc.perform(MockMvcRequestBuilders.delete("/reviews/1234"))
-//                .andExpect(status().isOk());
-//    }
+        ReviewDto expectedDto = converter.toDto(expected);
 
-    private static String toJson(Object object) throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(object);
+        when(reviews.save(Mockito.any())).thenReturn(expected);
+
+        ReviewDto result = controller.addNewReview(expectedDto);
+
+        verify(movies, times(1)).existsById(movie.getId());
+        verify(reviews, times(1)).save(Mockito.any());
+
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    void addNewReviewMovieNotFound() {
+        when(movies.existsById(Mockito.any())).thenReturn(false);
+
+        final ReviewDto reviewDto = converter.toDto(reviewWithoutId());
+        assertThrows(MovieNotFoundException.class, () -> controller.addNewReview(reviewDto));
+
+        verify(movies, times(1)).existsById(Mockito.any());
+    }
+
+    @Test
+    void updateReviewNotFound() {
+        when(reviews.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        final ReviewDto reviewDto = converter.toDto(reviewWithId());
+        assertThrows(ReviewNotFoundException.class,
+                () -> controller.updateReview(reviewDto, reviewDto.getId()));
+
+        verify(reviews, times(1)).findById(Mockito.any());
+    }
+
+    @Test
+    void updateReview() {
+        Review existing = reviewWithId();
+        Review updated = reviewWithId();
+        updated.setTitle("New Review Title!");
+        updated.setBody("New Review Body");
+        updated.setRating(10);
+
+        when(reviews.findById(existing.getId())).thenReturn(Optional.of(existing));
+        when(reviews.save(Mockito.any())).thenReturn(updated);
+
+        ReviewDto result = controller.updateReview(converter.toDto(updated), updated.getId());
+
+        verify(reviews, times(1)).findById(existing.getId());
+        verify(reviews, times(1)).save(Mockito.any());
+
+        assertEquals(converter.toDto(updated), result);
+    }
+
+    @Test
+    void deleteReview() {
+        final long reviewId = 1234L;
+        doNothing().when(reviews).deleteById(reviewId);
+
+        controller.deleteReview(reviewId);
+
+        verify(reviews, times(1)).deleteById(reviewId);
     }
 }

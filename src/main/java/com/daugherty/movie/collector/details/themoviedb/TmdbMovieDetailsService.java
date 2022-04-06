@@ -1,12 +1,15 @@
-package org.themoviedb.api;
+package com.daugherty.movie.collector.details.themoviedb;
 
+import com.daugherty.movie.collector.details.MovieDetails;
+import com.daugherty.movie.collector.details.MovieDetailsService;
+import com.daugherty.movie.collector.details.themoviedb.dto.TmdbMovie;
+import com.daugherty.movie.collector.details.themoviedb.dto.TmdbMovieList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.themoviedb.api.dto.TmdbMovie;
-import org.themoviedb.api.dto.TmdbMovieList;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -14,16 +17,19 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
+@ConditionalOnProperty(value = {"org.themoviedb.api.base_uri", "org.themoviedb.api.api_key"})
 @RequiredArgsConstructor
-public class MovieDbService {
+public class TmdbMovieDetailsService implements MovieDetailsService {
 
     private final RestTemplate rest = new RestTemplate();
-    private final ServiceProps props;
+    private final TmdbServiceProps props;
 
-    public Optional<TmdbMovie> getMovieById(long id) {
+    @Override
+    public Optional<MovieDetails> getMovieById(long id) {
         ResponseEntity<TmdbMovie> entity =
                 rest.getForEntity(movieByIdUri(id), TmdbMovie.class);
 
@@ -33,13 +39,17 @@ public class MovieDbService {
         return Optional.empty();
     }
 
-    public List<TmdbMovie> findMovies(String query) {
+    @Override
+    public List<MovieDetails> findMovies(String query) {
         try {
             ResponseEntity<TmdbMovieList> entity =
                     rest.getForEntity(moviesByQueryUri(query), TmdbMovieList.class);
 
             if (entity.getStatusCode().is2xxSuccessful()) {
-                return Objects.requireNonNull(entity.getBody()).getResults();
+                List<TmdbMovie> results = Objects.requireNonNull(entity.getBody()).getResults();
+                return results.stream()
+                        .map(d -> (MovieDetails) d)
+                        .collect(Collectors.toUnmodifiableList());
             }
         } catch (URISyntaxException e) {
             log.error("Query URI creation failed for '" + query + "'", e);
@@ -48,10 +58,11 @@ public class MovieDbService {
         return List.of();
     }
 
-    public Optional<TmdbMovie> getMovieByTitle(String title) {
+    @Override
+    public Optional<MovieDetails> getMovieByTitle(String title) {
         return findMovies(title).stream()
                 .filter(m -> m.getTitle().equals(title))
-                .max(Comparator.comparing(TmdbMovie::getReleaseDate));
+                .max(Comparator.comparing(MovieDetails::getReleaseDate));
     }
 
     private URI movieByIdUri(long id) {

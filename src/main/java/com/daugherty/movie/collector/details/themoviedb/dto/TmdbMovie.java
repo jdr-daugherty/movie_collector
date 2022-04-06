@@ -1,5 +1,6 @@
-package org.themoviedb.api.dto;
+package com.daugherty.movie.collector.details.themoviedb.dto;
 
+import com.daugherty.movie.collector.details.MovieDetails;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,11 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
-public class TmdbMovie {
+public class TmdbMovie implements MovieDetails {
     private long id;
     private String title;
     private String tagline;
+    private String overview;
     private boolean adult;
 
     @JsonProperty("release_date")

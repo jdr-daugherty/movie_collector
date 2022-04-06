@@ -1,4 +1,4 @@
-package org.themoviedb.api.dto;
+package com.daugherty.movie.collector.details.themoviedb.dto;
 
 import lombok.Data;
 

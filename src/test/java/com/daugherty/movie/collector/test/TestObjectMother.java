@@ -4,13 +4,11 @@ import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.dto.ReviewValue;
+import com.daugherty.movie.collector.details.MovieDetails;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.themoviedb.api.dto.TmdbMovie;
+import com.daugherty.movie.collector.details.themoviedb.dto.TmdbMovie;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -83,14 +81,14 @@ public final class TestObjectMother {
         MovieDto first = movieDtoWithId();
 
         MovieDto second = new MovieDto();
-        second.setId(first.getId()+1);
+        second.setId(first.getId() + 1);
         second.setTitle("Fight Club");
         second.setTmdbId(550);
 
         return List.of(first, second);
     }
 
-    public static TmdbMovie tmdbMovie() {
+    public static MovieDetails movieDetails() {
         TmdbMovie m = new TmdbMovie();
         m.setReleaseDate(new Date());
         m.setTitle("Reservoir Dogs");
@@ -119,7 +117,7 @@ public final class TestObjectMother {
         r1.setRating(10);
         r1.setReviewed(new Date(697421284));//Fri Feb 07 1992 00:08:04 GMT+0000
 
-         ReviewValue r2 = new ReviewValue();
+        ReviewValue r2 = new ReviewValue();
         r2.setId(225);
         r2.setTitle("Love This Dog Movie");
         r2.setBody("This is the best dog movie!");

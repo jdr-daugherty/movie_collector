@@ -4,6 +4,8 @@ import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewValue;
 import com.daugherty.movie.collector.exception.MovieNotFoundException;
+import com.daugherty.movie.collector.details.MovieDetails;
+import com.daugherty.movie.collector.details.MovieDetailsService;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
@@ -14,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.themoviedb.api.MovieDbService;
-import org.themoviedb.api.dto.TmdbMovie;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,7 +29,7 @@ public class MoviesService {
 
     private final Movies movies;
     private final Reviews reviews;
-    private final MovieDbService movieDbService;
+    private final MovieDetailsService detailsService;
 
     public List<MovieDto> getAllMovies() {
         return movies.findAll().stream()
@@ -44,7 +44,7 @@ public class MoviesService {
     }
 
     public MovieDto addNewMovie(@Valid @RequestBody MovieDto movieDto) {
-        return this.toDto(movies.save(this.toModel(movieDto)));
+        return toDto(movies.save(this.toModel(movieDto)));
     }
 
     public ResponseEntity<Void> deleteMovie(@PathVariable long id) {
@@ -53,10 +53,14 @@ public class MoviesService {
     }
 
     public MovieDetailsDto getMovieDetails(@PathVariable long movieId) {
-        Movie movie = movies.findById(movieId).orElseThrow(MovieNotFoundException::new);
-        TmdbMovie tmdbMovie = movieDbService.getMovieById(movie.getTmdbId()).orElseThrow(MovieNotFoundException::new);
+        Movie movie = movies.findById(movieId)
+                .orElseThrow(MovieNotFoundException::new);
+
+        MovieDetails details = detailsService.getMovieById(movie.getTmdbId())
+                .orElseThrow(MovieNotFoundException::new);
+
         List<Review> reviewList = reviews.findByMovieId(movieId);
-        return this.toDetailsDto(movie, reviewList, tmdbMovie);
+        return toDetailsDto(movie, reviewList, details);
     }
 
     private MovieDto toDto(Movie movie) {
@@ -67,10 +71,12 @@ public class MoviesService {
         return modelMapper.map(dto, Movie.class);
     }
 
-    private MovieDetailsDto toDetailsDto(Movie movie, List<Review> reviews, TmdbMovie tmdbMovie) {
+    private MovieDetailsDto toDetailsDto(Movie movie,
+                                         List<Review> reviews,
+                                         MovieDetails details) {
         MovieDetailsDto dto = new MovieDetailsDto();
 
-        modelMapper.map(tmdbMovie, dto);
+        modelMapper.map(details, dto);
         modelMapper.map(movie, dto);
 
         dto.setReviews(reviews.stream()

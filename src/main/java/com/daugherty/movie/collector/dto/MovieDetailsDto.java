@@ -24,6 +24,7 @@ public class MovieDetailsDto {
     private String title;
 
     private String tagline;
+    private String overview;
     private boolean adult;
 
     @JsonProperty("release_date")

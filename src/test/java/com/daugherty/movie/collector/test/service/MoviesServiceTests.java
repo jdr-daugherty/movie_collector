@@ -3,6 +3,8 @@ package com.daugherty.movie.collector.test.service;
 import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.exception.MovieNotFoundException;
+import com.daugherty.movie.collector.details.MovieDetails;
+import com.daugherty.movie.collector.details.MovieDetailsService;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
@@ -17,8 +19,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.themoviedb.api.MovieDbService;
-import org.themoviedb.api.dto.TmdbMovie;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,13 +40,13 @@ class MoviesServiceTests {
     private Reviews reviews;
 
     @MockBean
-    private MovieDbService movieDbService;
+    private MovieDetailsService detailsService;
 
     private MoviesService service;
 
     @BeforeEach
     private void setup() {
-        service = new MoviesService(movies, reviews, movieDbService);
+        service = new MoviesService(movies, reviews, detailsService);
     }
 
     @Test
@@ -85,36 +85,36 @@ class MoviesServiceTests {
 
     @Test
     void getMovieDetails() {
-        TmdbMovie tmdbMovie = tmdbMovie();
+        MovieDetails movieDetails = movieDetails();
 
         Movie movie = movieWithId();
-        movie.setTmdbId(tmdbMovie.getId());
-        movie.setTitle(tmdbMovie.getTitle());
+        movie.setTmdbId(movieDetails.getId());
+        movie.setTitle(movieDetails.getTitle());
 
         Review review = reviewWithId();
         review.setMovieId(movie.getId());
 
         when(movies.findById(movie.getId())).thenReturn(Optional.of(movie));
         when(reviews.findByMovieId(movie.getId())).thenReturn(List.of(review));
-        when(movieDbService.getMovieById(movie.getTmdbId())).thenReturn(Optional.of(tmdbMovie));
+        when(detailsService.getMovieById(movie.getTmdbId())).thenReturn(Optional.of(movieDetails));
 
         MovieDetailsDto dto = service.getMovieDetails(movie.getId());
 
         verify(movies, times(1)).findById(movie.getId());
         verify(reviews, times(1)).findByMovieId(movie.getId());
-        verify(movieDbService, times(1)).getMovieById(movie.getTmdbId());
+        verify(detailsService, times(1)).getMovieById(movie.getTmdbId());
 
         // This logic ensures that the details DTO includes all the expected values.
         // Note that this test cannot detect missing or untested DTO fields.
         assertEquals(movie.getId(), dto.getId());
         assertEquals(movie.getTitle(), dto.getTitle());
 
-        assertEquals(tmdbMovie.getTitle(), dto.getTitle());
-        assertEquals(tmdbMovie.getTagline(), dto.getTagline());
-        assertEquals(tmdbMovie.isAdult(), dto.isAdult());
-        assertEquals(tmdbMovie.getReleaseDate(), dto.getReleaseDate());
-        assertEquals(tmdbMovie.getVoteAverage(), dto.getVoteAverage());
-        assertEquals(tmdbMovie.getRuntime(), dto.getRuntime());
+        assertEquals(movieDetails.getTitle(), dto.getTitle());
+        assertEquals(movieDetails.getTagline(), dto.getTagline());
+        assertEquals(movieDetails.isAdult(), dto.isAdult());
+        assertEquals(movieDetails.getReleaseDate(), dto.getReleaseDate());
+        assertEquals(movieDetails.getVoteAverage(), dto.getVoteAverage());
+        assertEquals(movieDetails.getRuntime(), dto.getRuntime());
 
         assertEquals(1, dto.getReviews().size());
         assertEquals(review.getTitle(), dto.getReviews().get(0).getTitle());

@@ -1,14 +1,13 @@
-package com.daugherty.movie.collector.test;
+package com.daugherty.movie.collector.test.service;
 
+import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.exception.MovieNotFoundException;
 import com.daugherty.movie.collector.exception.ReviewNotFoundException;
-import com.daugherty.movie.collector.controller.ReviewsController;
-import com.daugherty.movie.collector.dto.DtoConverter;
-import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
+import com.daugherty.movie.collector.service.ReviewsService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.themoviedb.api.MovieDbService;
 
 import java.util.Date;
 import java.util.List;
@@ -25,13 +23,12 @@ import java.util.Optional;
 
 import static com.daugherty.movie.collector.test.TestObjectMother.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
 class ReviewsServiceTests {
-
-    private final DtoConverter converter = new DtoConverter();
 
     @MockBean
     private Movies movies;
@@ -39,19 +36,16 @@ class ReviewsServiceTests {
     @MockBean
     private Reviews reviews;
 
-    @MockBean
-    private MovieDbService movieDbService;
-
-    private ReviewsController controller;
+    private ReviewsService service;
 
     @BeforeEach
-    private void setupController() {
-        controller = new ReviewsController(movies, reviews, movieDbService);
+    private void setup() {
+        service = new ReviewsService(movies, reviews);
     }
 
     @Test
     void getAllReviewsWithNoReviews() {
-        assertTrue(controller.getAllReviews().isEmpty());
+        assertTrue(service.getAllReviews().isEmpty());
     }
 
     @Test
@@ -59,7 +53,7 @@ class ReviewsServiceTests {
         List<Review> expected = List.of(reviewWithId());
         when(reviews.findAll()).thenReturn(expected);
 
-        List<ReviewDto> allReviews = controller.getAllReviews();
+        List<ReviewDto> allReviews = service.getAllReviews();
         verify(reviews, times(1)).findAll();
 
         ReviewDto result = allReviews.get(0);
@@ -71,7 +65,7 @@ class ReviewsServiceTests {
         List<Review> expected = List.of(reviewWithId());
         when(reviews.findByMovieId(2)).thenReturn(expected);
 
-        List<ReviewDto> allReviews = controller.findReviewsByMovieId(2);
+        List<ReviewDto> allReviews = service.findReviewsByMovieId(2);
         verify(reviews, times(1)).findByMovieId(2);
 
         ReviewDto result = allReviews.get(0);
@@ -81,7 +75,7 @@ class ReviewsServiceTests {
     @Test
     void getReviewByIdNotFound() {
         Assertions.assertThrows(ReviewNotFoundException.class,
-                () -> controller.getReviewById(Long.MIN_VALUE));
+                () -> service.getReviewById(Long.MIN_VALUE));
     }
 
     @Test
@@ -89,10 +83,15 @@ class ReviewsServiceTests {
         Review expected = reviewWithId();
         when(reviews.findById(expected.getId())).thenReturn(Optional.of(expected));
 
-        ReviewDto result = controller.getReviewById(expected.getId());
+        ReviewDto result = service.getReviewById(expected.getId());
         verify(reviews, times(1)).findById(expected.getId());
 
+        // Verify model (expected) to DTO (result) conversion
+        assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
+        assertEquals(expected.getBody(), result.getBody());
+        assertEquals(expected.getMovieId(), result.getMovieId());
+        assertEquals(expected.getReviewed(), result.getReviewed());
     }
 
     @Test
@@ -100,60 +99,66 @@ class ReviewsServiceTests {
         Movie movie = movieWithId();
         when(movies.existsById(movie.getId())).thenReturn(true);
 
-        Review expected = reviewWithoutId();
+        ReviewDto expected = reviewDtoWithoutId();
         expected.setMovieId(movie.getId());
         expected.setReviewed(new Date());
 
-        ReviewDto expectedDto = converter.toDto(expected);
+        when(reviews.save(Mockito.any(Review.class))).then(returnsFirstArg());
 
-        when(reviews.save(Mockito.any())).thenReturn(expected);
-
-        ReviewDto result = controller.addNewReview(expectedDto);
+        ReviewDto result = service.addNewReview(expected);
 
         verify(movies, times(1)).existsById(movie.getId());
-        verify(reviews, times(1)).save(Mockito.any());
+        verify(reviews, times(1)).save(Mockito.any(Review.class));
 
-        assertEquals(expectedDto, result);
+        // Verify both model (expected) to DTO (result) conversion and DTO to model conversion.
+        assertEquals(expected, result);
     }
 
     @Test
     void addNewReviewMovieNotFound() {
-        when(movies.existsById(Mockito.any())).thenReturn(false);
+        when(movies.existsById(Mockito.anyLong())).thenReturn(false);
 
-        final ReviewDto reviewDto = converter.toDto(reviewWithoutId());
-        assertThrows(MovieNotFoundException.class, () -> controller.addNewReview(reviewDto));
+        final ReviewDto reviewDto = reviewDtoWithoutId();
+        assertThrows(MovieNotFoundException.class,
+                () -> service.addNewReview(reviewDto));
 
-        verify(movies, times(1)).existsById(Mockito.any());
+        verify(movies, times(1)).existsById(Mockito.anyLong());
     }
 
     @Test
     void updateReviewNotFound() {
-        when(reviews.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(reviews.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        final ReviewDto reviewDto = converter.toDto(reviewWithId());
+        final ReviewDto reviewDto = reviewDtoWithId();
         assertThrows(ReviewNotFoundException.class,
-                () -> controller.updateReview(reviewDto, reviewDto.getId()));
+                () -> service.updateReview(reviewDto, reviewDto.getId()));
 
-        verify(reviews, times(1)).findById(Mockito.any());
+        verify(reviews, times(1)).findById(Mockito.anyLong());
     }
 
     @Test
     void updateReview() {
         Review existing = reviewWithId();
-        Review updated = reviewWithId();
-        updated.setTitle("New Review Title!");
-        updated.setBody("New Review Body");
-        updated.setRating(10);
+        existing.setReviewed(new Date(1641056400));// 2022-01-01-1200
+        ReviewDto parameter = reviewDtoWithId();
+        parameter.setReviewed(new Date(1643734800));// 2022-02-01-1200
+        parameter.setTitle("New Review Title!");
+        parameter.setBody("New Review Body");
+        parameter.setRating(10);
 
         when(reviews.findById(existing.getId())).thenReturn(Optional.of(existing));
-        when(reviews.save(Mockito.any())).thenReturn(updated);
+        when(reviews.save(Mockito.any(Review.class))).then(returnsFirstArg());
 
-        ReviewDto result = controller.updateReview(converter.toDto(updated), updated.getId());
+        ReviewDto result = service.updateReview(parameter, parameter.getId());
 
         verify(reviews, times(1)).findById(existing.getId());
-        verify(reviews, times(1)).save(Mockito.any());
+        verify(reviews, times(1)).save(Mockito.any(Review.class));
 
-        assertEquals(converter.toDto(updated), result);
+        assertEquals(parameter.getTitle(), result.getTitle());
+        assertEquals(parameter.getBody(), result.getBody());
+        assertEquals(parameter.getRating(), result.getRating());
+
+        assertTrue(existing.getReviewed().compareTo(result.getReviewed()) <= 0);
     }
 
     @Test
@@ -161,7 +166,7 @@ class ReviewsServiceTests {
         final long reviewId = 1234L;
         doNothing().when(reviews).deleteById(reviewId);
 
-        controller.deleteReview(reviewId);
+        service.deleteReview(reviewId);
 
         verify(reviews, times(1)).deleteById(reviewId);
     }

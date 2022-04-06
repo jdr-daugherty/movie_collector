@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.test;
+package com.daugherty.movie.collector.test.external;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

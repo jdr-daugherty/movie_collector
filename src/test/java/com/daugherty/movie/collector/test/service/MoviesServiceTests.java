@@ -1,14 +1,13 @@
-package com.daugherty.movie.collector.test;
+package com.daugherty.movie.collector.test.service;
 
-import com.daugherty.movie.collector.exception.MovieNotFoundException;
-import com.daugherty.movie.collector.controller.MoviesController;
-import com.daugherty.movie.collector.dto.DtoConverter;
 import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
+import com.daugherty.movie.collector.exception.MovieNotFoundException;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
+import com.daugherty.movie.collector.service.MoviesService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +26,12 @@ import java.util.Optional;
 import static com.daugherty.movie.collector.test.TestObjectMother.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
 class MoviesServiceTests {
-
-    private final DtoConverter converter = new DtoConverter();
 
     @MockBean
     private Movies movies;
@@ -44,16 +42,16 @@ class MoviesServiceTests {
     @MockBean
     private MovieDbService movieDbService;
 
-    private MoviesController controller;
+    private MoviesService service;
 
     @BeforeEach
-    private void setupController() {
-        controller = new MoviesController(movies, reviews, movieDbService);
+    private void setup() {
+        service = new MoviesService(movies, reviews, movieDbService);
     }
 
     @Test
     void getAllMoviesWithNoMovies() {
-        assertTrue(controller.getAllMovies().isEmpty());
+        assertTrue(service.getAllMovies().isEmpty());
     }
 
     @Test
@@ -61,7 +59,7 @@ class MoviesServiceTests {
         List<Movie> expected = List.of(movieWithId());
         when(movies.findAll()).thenReturn(expected);
 
-        List<MovieDto> allMovies = controller.getAllMovies();
+        List<MovieDto> allMovies = service.getAllMovies();
 
         verify(movies, times(1)).findAll();
 
@@ -76,7 +74,7 @@ class MoviesServiceTests {
         Movie expected = movieWithId();
         when(movies.findById(expected.getId())).thenReturn(Optional.of(expected));
 
-        MovieDto result = controller.getMovieById(expected.getId());
+        MovieDto result = service.getMovieById(expected.getId());
 
         verify(movies, times(1)).findById(expected.getId());
 
@@ -100,37 +98,46 @@ class MoviesServiceTests {
         when(reviews.findByMovieId(movie.getId())).thenReturn(List.of(review));
         when(movieDbService.getMovieById(movie.getTmdbId())).thenReturn(Optional.of(tmdbMovie));
 
-        MovieDetailsDto dto = controller.getMovieDetails(movie.getId());
+        MovieDetailsDto dto = service.getMovieDetails(movie.getId());
 
         verify(movies, times(1)).findById(movie.getId());
         verify(reviews, times(1)).findByMovieId(movie.getId());
         verify(movieDbService, times(1)).getMovieById(movie.getTmdbId());
 
-        // Verify that at least some of the movie, review, and TMDB data is included.
-        // Full DTO conversion logic is covered in the DTO converter tests.
+        // This logic ensures that the details DTO includes all the expected values.
+        // Note that this test cannot detect missing or untested DTO fields.
         assertEquals(movie.getId(), dto.getId());
         assertEquals(movie.getTitle(), dto.getTitle());
+
+        assertEquals(tmdbMovie.getTitle(), dto.getTitle());
         assertEquals(tmdbMovie.getTagline(), dto.getTagline());
+        assertEquals(tmdbMovie.isAdult(), dto.isAdult());
+        assertEquals(tmdbMovie.getReleaseDate(), dto.getReleaseDate());
+        assertEquals(tmdbMovie.getVoteAverage(), dto.getVoteAverage());
+        assertEquals(tmdbMovie.getRuntime(), dto.getRuntime());
+
         assertEquals(1, dto.getReviews().size());
         assertEquals(review.getTitle(), dto.getReviews().get(0).getTitle());
+        assertEquals(review.getBody(), dto.getReviews().get(0).getBody());
+        assertEquals(review.getReviewed(), dto.getReviews().get(0).getReviewed());
+        assertEquals(review.getRating(), dto.getReviews().get(0).getRating());
     }
 
     @Test
     void getMovieByIdNotFound() {
         Assertions.assertThrows(MovieNotFoundException.class,
-                () -> controller.getMovieById(Long.MIN_VALUE));
+                () -> service.getMovieById(Long.MIN_VALUE));
     }
 
     @Test
     void addNewMovie() {
-        Movie expected = movieWithoutId();
-        MovieDto expectedDto = converter.toDto(expected);
-        when(movies.save(Mockito.any())).thenReturn(expected);
+        MovieDto expected = movieDtoWithoutId();
+        when(movies.save(Mockito.any(Movie.class))).then(returnsFirstArg());
 
-        MovieDto result = controller.addNewMovie(expectedDto);
-        verify(movies, times(1)).save(Mockito.any());
+        MovieDto result = service.addNewMovie(expected);
+        verify(movies, times(1)).save(any(Movie.class));
 
-        assertEquals(expectedDto, result);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -138,7 +145,7 @@ class MoviesServiceTests {
         final long movieId = 1234L;
         doNothing().when(movies).deleteById(movieId);
 
-        ResponseEntity<Void> response = controller.deleteMovie(movieId);
+        ResponseEntity<Void> response = service.deleteMovie(movieId);
 
         verify(movies, times(1)).deleteById(movieId);
 

@@ -3,7 +3,6 @@
 Spring and TDD practice.
 
 ## TODO List
-- Add missing controller end-point tests 
 - Consider WireMock for testing TMDB interface.
 - Search (/search?query=) to find movies in TMDB
 - Oauth2 authentication via Google Cloud

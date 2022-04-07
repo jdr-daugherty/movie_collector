@@ -45,7 +45,7 @@ public class ReviewsController {
 
     @Operation(summary = "Delete the review with the given id")
     @DeleteMapping("/reviews/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteReview(@PathVariable long id) {
         reviewsService.deleteReview(id);
     }

@@ -38,7 +38,7 @@ public class MoviesController {
 
     @Operation(summary = "Delete the movie with the given id")
     @DeleteMapping("/movies/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMovie(@PathVariable long id) {
         moviesService.deleteMovie(id);
     }

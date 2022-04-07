@@ -39,7 +39,7 @@ public class MoviesServiceImpl implements MoviesService {
     }
 
     @Override
-    public MovieDto getMovieById(long id) {
+    public MovieDto getMovieById(long id) throws MovieNotFoundException {
         return movies.findById(id)
                 .map(this::toDto)
                 .orElseThrow(MovieNotFoundException::new);

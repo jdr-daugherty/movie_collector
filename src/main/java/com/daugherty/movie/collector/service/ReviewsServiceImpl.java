@@ -30,7 +30,7 @@ public class ReviewsServiceImpl implements ReviewsService {
     }
 
     @Override
-    public ReviewDto addNewReview(ReviewDto reviewDto) {
+    public ReviewDto addNewReview(ReviewDto reviewDto) throws MovieNotFoundException {
         if (!movies.existsById(reviewDto.getMovieId())) {
             throw new MovieNotFoundException();
         }
@@ -38,14 +38,14 @@ public class ReviewsServiceImpl implements ReviewsService {
     }
 
     @Override
-    public ReviewDto getReviewById(long id) {
+    public ReviewDto getReviewById(long id) throws ReviewNotFoundException {
         return reviews.findById(id)
                 .map(this::toDto)
                 .orElseThrow(ReviewNotFoundException::new);
     }
 
     @Override
-    public ReviewDto updateReview(ReviewDto source, long id) {
+    public ReviewDto updateReview(ReviewDto source, long id) throws ReviewNotFoundException {
         return reviews.findById(id)
                 .map(existing -> reviews.save(applyReviewUpdates(source, existing)))
                 .map(this::toDto)

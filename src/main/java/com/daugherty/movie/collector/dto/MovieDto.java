@@ -21,6 +21,6 @@ public class MovieDto {
     @Schema(description = "The title of the movie")
     private String title;
 
-    @Schema(description = "The ID of this movie at themoviedb.org.")
-    private long tmdbId;
+    @Schema(description = "The ID assigned to this movie by the external movie details service.")
+    private long detailsId;
 }

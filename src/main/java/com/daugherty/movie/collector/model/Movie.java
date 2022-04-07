@@ -24,10 +24,11 @@ public class Movie {
     @NotNull
     private String title;
 
-    private long tmdbId;
+    // The ID assigned to this movie by the external movie details service.
+    private long detailsId;
 
-    public Movie(String title, long tmdbId) {
+    public Movie(String title, long detailsId) {
         this.title = title;
-        this.tmdbId = tmdbId;
+        this.detailsId = detailsId;
     }
 }

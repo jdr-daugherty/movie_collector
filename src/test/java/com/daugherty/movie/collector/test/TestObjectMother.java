@@ -67,7 +67,7 @@ public final class TestObjectMother {
     public static MovieDto movieDtoWithoutId() {
         MovieDto dto = new MovieDto();
         dto.setTitle("Reservoir Dogs");
-        dto.setTmdbId(500);
+        dto.setDetailsId(500);
         return dto;
     }
 
@@ -83,7 +83,7 @@ public final class TestObjectMother {
         MovieDto second = new MovieDto();
         second.setId(first.getId() + 1);
         second.setTitle("Fight Club");
-        second.setTmdbId(550);
+        second.setDetailsId(550);
 
         return List.of(first, second);
     }

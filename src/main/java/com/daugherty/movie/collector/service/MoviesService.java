@@ -56,7 +56,7 @@ public class MoviesService {
         Movie movie = movies.findById(movieId)
                 .orElseThrow(MovieNotFoundException::new);
 
-        MovieDetails details = detailsService.getMovieById(movie.getTmdbId())
+        MovieDetails details = detailsService.getMovieById(movie.getDetailsId())
                 .orElseThrow(MovieNotFoundException::new);
 
         List<Review> reviewList = reviews.findByMovieId(movieId);

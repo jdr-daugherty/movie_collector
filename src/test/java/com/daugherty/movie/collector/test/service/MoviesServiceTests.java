@@ -66,7 +66,7 @@ class MoviesServiceTests {
         MovieDto result = allMovies.get(0);
         assertEquals(expected.get(0).getId(), result.getId());
         assertEquals(expected.get(0).getTitle(), result.getTitle());
-        assertEquals(expected.get(0).getTmdbId(), result.getTmdbId());
+        assertEquals(expected.get(0).getDetailsId(), result.getDetailsId());
     }
 
     @Test
@@ -80,7 +80,7 @@ class MoviesServiceTests {
 
         assertEquals(expected.getId(), result.getId());
         assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getTmdbId(), result.getTmdbId());
+        assertEquals(expected.getDetailsId(), result.getDetailsId());
     }
 
     @Test
@@ -88,7 +88,7 @@ class MoviesServiceTests {
         MovieDetails movieDetails = movieDetails();
 
         Movie movie = movieWithId();
-        movie.setTmdbId(movieDetails.getId());
+        movie.setDetailsId(movieDetails.getId());
         movie.setTitle(movieDetails.getTitle());
 
         Review review = reviewWithId();
@@ -96,13 +96,13 @@ class MoviesServiceTests {
 
         when(movies.findById(movie.getId())).thenReturn(Optional.of(movie));
         when(reviews.findByMovieId(movie.getId())).thenReturn(List.of(review));
-        when(detailsService.getMovieById(movie.getTmdbId())).thenReturn(Optional.of(movieDetails));
+        when(detailsService.getMovieById(movie.getDetailsId())).thenReturn(Optional.of(movieDetails));
 
         MovieDetailsDto dto = service.getMovieDetails(movie.getId());
 
         verify(movies, times(1)).findById(movie.getId());
         verify(reviews, times(1)).findByMovieId(movie.getId());
-        verify(detailsService, times(1)).getMovieById(movie.getTmdbId());
+        verify(detailsService, times(1)).getMovieById(movie.getDetailsId());
 
         // This logic ensures that the details DTO includes all the expected values.
         // Note that this test cannot detect missing or untested DTO fields.

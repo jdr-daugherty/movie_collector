@@ -8,6 +8,7 @@ import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import com.daugherty.movie.collector.service.ReviewsService;
+import com.daugherty.movie.collector.service.ReviewsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
-@Slf4j
 @ExtendWith(SpringExtension.class)
 class ReviewsServiceTests {
 
@@ -40,7 +40,7 @@ class ReviewsServiceTests {
 
     @BeforeEach
     private void setup() {
-        service = new ReviewsService(movies, reviews);
+        service = new ReviewsServiceImpl(movies, reviews);
     }
 
     @Test
@@ -87,11 +87,7 @@ class ReviewsServiceTests {
         verify(reviews, times(1)).findById(expected.getId());
 
         // Verify model (expected) to DTO (result) conversion
-        assertEquals(expected.getId(), result.getId());
-        assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getBody(), result.getBody());
-        assertEquals(expected.getMovieId(), result.getMovieId());
-        assertEquals(expected.getReviewed(), result.getReviewed());
+        assertEqual(expected, result);
     }
 
     @Test
@@ -169,5 +165,14 @@ class ReviewsServiceTests {
         service.deleteReview(reviewId);
 
         verify(reviews, times(1)).deleteById(reviewId);
+    }
+
+
+    private void assertEqual(Review expected, ReviewDto result) {
+        assertEquals(expected.getId(), result.getId());
+        assertEquals(expected.getTitle(), result.getTitle());
+        assertEquals(expected.getBody(), result.getBody());
+        assertEquals(expected.getMovieId(), result.getMovieId());
+        assertEquals(expected.getReviewed(), result.getReviewed());
     }
 }

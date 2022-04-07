@@ -12,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @ControllerAdvice
-public class ControllerExceptionHandler {
+class ControllerExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(MovieNotFoundException.class)

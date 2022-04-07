@@ -1,5 +1,10 @@
 package com.daugherty.movie.collector.details;
 
+/**
+ * A set of additional details provided by an external movie details provider.
+ *
+ * @see MovieDetailsService
+ */
 public interface MovieDetails {
     long getId();
 

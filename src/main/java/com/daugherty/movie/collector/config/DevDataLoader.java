@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Profile("dev")
 @Component
 @RequiredArgsConstructor
-public class DevDataLoader implements ApplicationRunner {
+class DevDataLoader implements ApplicationRunner {
 
     private final Movies movies;
     private final Reviews reviews;

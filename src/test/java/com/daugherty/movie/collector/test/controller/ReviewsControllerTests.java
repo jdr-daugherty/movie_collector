@@ -165,7 +165,7 @@ class ReviewsControllerTests {
         doNothing().when(service).deleteReview(anyLong());
 
         mvc.perform(MockMvcRequestBuilders.delete("/reviews/1234"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(service, times(1)).deleteReview(anyLong());
     }

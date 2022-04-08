@@ -102,7 +102,7 @@ class MoviesControllerTests {
     @Test
     void deleteMovie() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/movies/1234"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     private static String toJson(Object object) throws JsonProcessingException {

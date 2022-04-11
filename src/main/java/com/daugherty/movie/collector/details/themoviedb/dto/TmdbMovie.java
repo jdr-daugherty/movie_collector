@@ -14,10 +14,19 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 public class TmdbMovie implements MovieDetails {
+    @JsonProperty("id")
     private long id;
+
+    @JsonProperty("title")
     private String title;
+
+    @JsonProperty("tagline")
     private String tagline;
+
+    @JsonProperty("overview")
     private String overview;
+
+    @JsonProperty("adult")
     private boolean adult;
 
     @JsonProperty("release_date")
@@ -26,5 +35,6 @@ public class TmdbMovie implements MovieDetails {
     @JsonProperty("vote_average")
     private double voteAverage;
 
+    @JsonProperty("runtime")
     private int runtime;
 }

@@ -4,13 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -20,20 +14,22 @@ import java.util.Date;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private long id;
 
-    @NotNull
+    @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "body", length = 20480)
     private String body;
 
+    @Column(name = "movie_id", nullable = false)
     private long movieId;
 
-    @NotNull
+    @Column(name = "reviewed", nullable = false)
     private Date reviewed;
 
-    @Max(10)
-    @Min(0)
+    @Column(name = "rating", nullable = false)
     private Integer rating;
 
     public Review(String title, long movieId) {

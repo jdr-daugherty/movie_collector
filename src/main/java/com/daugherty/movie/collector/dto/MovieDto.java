@@ -1,26 +1,23 @@
 package com.daugherty.movie.collector.dto;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Data
 public class MovieDto {
 
+    @JsonProperty("id")
     private long id;
 
     @NotNull
     @Schema(description = "The title of the movie")
+    @JsonProperty("title")
     private String title;
 
     @Schema(description = "The ID assigned to this movie by the external movie details service.")
+    @JsonProperty("details_id")
     private long detailsId;
 }

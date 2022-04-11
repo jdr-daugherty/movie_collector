@@ -5,11 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -19,12 +15,14 @@ import javax.validation.constraints.NotNull;
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
     private long id;
 
-    @NotNull
+    @Column(name = "title", nullable = false)
     private String title;
 
     // The ID assigned to this movie by the external movie details service.
+    @Column(name = "details_id", nullable = false)
     private long detailsId;
 
     public Movie(String title, long detailsId) {

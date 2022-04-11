@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static com.daugherty.movie.collector.test.TestObjectMother.*;
+import static com.daugherty.movie.collector.test.mother.ReviewMother.*;
 import static java.lang.String.format;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;

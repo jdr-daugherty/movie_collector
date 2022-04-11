@@ -9,7 +9,6 @@ import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import com.daugherty.movie.collector.service.ReviewsService;
 import com.daugherty.movie.collector.service.ReviewsServiceImpl;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.daugherty.movie.collector.test.TestObjectMother.*;
+import static com.daugherty.movie.collector.test.mother.MovieMother.movieWithId;
+import static com.daugherty.movie.collector.test.mother.ReviewMother.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;

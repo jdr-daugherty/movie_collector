@@ -152,7 +152,7 @@ class ReviewsControllerTests {
         mvc.perform(MockMvcRequestBuilders.put("/reviews/" + updated.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(updated)))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.title").value(updated.getTitle()))
                 .andExpect(jsonPath("$.body").value(updated.getBody()))
                 .andExpect(jsonPath("$.rating").value(updated.getRating()));

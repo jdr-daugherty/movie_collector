@@ -14,17 +14,18 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class MoviesController {
-
     private final MoviesService moviesService;
 
     @Operation(summary = "Get the full list of movies")
     @GetMapping(value = "/movies")
+    @ResponseStatus(HttpStatus.OK)
     public List<MovieDto> getAllMovies() {
         return moviesService.getAllMovies();
     }
 
     @Operation(summary = "Get a movie by its id")
     @GetMapping(value = "/movies/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public MovieDto getMovieById(@PathVariable long id) {
         return moviesService.getMovieById(id);
     }
@@ -45,6 +46,7 @@ public class MoviesController {
 
     @Operation(summary = "Get the full details of the given movie")
     @GetMapping(value = "/movies/{movieId}/details")
+    @ResponseStatus(HttpStatus.OK)
     public MovieDetailsDto getMovieDetails(@PathVariable long movieId) {
         return moviesService.getMovieDetails(movieId);
     }

@@ -17,6 +17,7 @@ public class ReviewsController {
 
     @Operation(summary = "Get the full list of movie reviews")
     @GetMapping(value = "/reviews")
+    @ResponseStatus(HttpStatus.OK)
     public List<ReviewDto> getAllReviews() {
         return reviewsService.getAllReviews();
     }
@@ -31,6 +32,7 @@ public class ReviewsController {
 
     @Operation(summary = "Get a review by its id")
     @GetMapping(value = "/reviews/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public ReviewDto getReviewById(@PathVariable long id) {
         return reviewsService.getReviewById(id);
     }
@@ -38,6 +40,7 @@ public class ReviewsController {
     // TODO: Remove the Review parameter to updateReview and replace it with explicit parameters.
     @Operation(summary = "Update the details of a review")
     @PutMapping(value = "/reviews/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public ReviewDto updateReview(@Valid @RequestBody ReviewDto updated,
                                   @PathVariable long id) {
         return reviewsService.updateReview(updated, id);
@@ -52,6 +55,7 @@ public class ReviewsController {
 
     @Operation(summary = "Get the list of movie reviews for a given movie")
     @GetMapping(value = "/reviews/by_movie/{movieId}")
+    @ResponseStatus(HttpStatus.OK)
     public List<ReviewDto> findReviewsByMovieId(@PathVariable long movieId) {
         return reviewsService.findReviewsByMovieId(movieId);
     }

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
+@Schema(name="review")
 public class ReviewDto {
     @JsonProperty("id")
     private long id;

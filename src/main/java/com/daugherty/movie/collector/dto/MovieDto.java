@@ -7,8 +7,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
+@Schema(name="movie")
 public class MovieDto {
-
     @JsonProperty("id")
     private long id;
 

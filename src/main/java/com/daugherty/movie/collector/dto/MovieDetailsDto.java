@@ -1,6 +1,9 @@
 package com.daugherty.movie.collector.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@Schema(name="movie_details")
 public class MovieDetailsDto {
     @JsonProperty("id")
     private long id;

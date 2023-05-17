@@ -15,7 +15,6 @@ public class MovieDetailsDto {
     @JsonProperty("id")
     private long id;
 
-    @NotNull
     @JsonProperty("title")
     @Schema(description = "The title of the movie")
     private String title;

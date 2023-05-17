@@ -1,9 +1,10 @@
 package com.daugherty.movie.collector.test.external;
 
+import com.daugherty.movie.collector.details.MovieDetails;
+import com.daugherty.movie.collector.details.themoviedb.TmdbMovieDetailsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.daugherty.movie.collector.details.themoviedb.TmdbMovieDetailsService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,9 +20,9 @@ public class MovieDbServiceTests {
     @Test
     public void getReservoirDogsById() {
         var result = movieDbService.getMovieById(500);
-        assertTrue(result.isPresent());
-        assertEquals(500, result.get().getId());
-        assertEquals("Reservoir Dogs", result.get().getTitle());
+        assertEquals(500, result.map(MovieDetails::getId).orElse(0L));
+        assertEquals("Reservoir Dogs",
+                result.map(MovieDetails::getTitle).orElse("Failure"));
     }
 
     @Test
@@ -34,6 +35,7 @@ public class MovieDbServiceTests {
     public void findReservoirDogsByTitle() {
         var result = movieDbService.getMovieByTitle("Reservoir Dogs");
         assertTrue(result.isPresent());
-        assertEquals(500, result.get().getId());
+        assertEquals("Reservoir Dogs",
+                result.map(MovieDetails::getTitle).orElse("Failure"));
     }
 }

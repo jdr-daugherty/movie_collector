@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.test.mother;
+package com.daugherty.movie.collector.test.factory;
 
 import com.daugherty.movie.collector.dto.ReviewDto;
 import com.daugherty.movie.collector.model.Review;
@@ -6,7 +6,7 @@ import com.daugherty.movie.collector.model.Review;
 import java.util.Date;
 import java.util.List;
 
-public final class ReviewMother {
+public final class ReviewFactory {
 
     public static Review reviewWithId() {
         Review expected = reviewWithoutId();

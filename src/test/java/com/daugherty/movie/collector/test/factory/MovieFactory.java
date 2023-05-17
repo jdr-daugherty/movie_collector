@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.test.mother;
+package com.daugherty.movie.collector.test.factory;
 
 import com.daugherty.movie.collector.details.MovieDetails;
 import com.daugherty.movie.collector.details.themoviedb.dto.TmdbMovie;
@@ -10,7 +10,7 @@ import com.daugherty.movie.collector.model.Movie;
 import java.util.Date;
 import java.util.List;
 
-public final class MovieMother {
+public final class MovieFactory {
 
     public static Movie movieWithId() {
         Movie expected = movieWithoutId();

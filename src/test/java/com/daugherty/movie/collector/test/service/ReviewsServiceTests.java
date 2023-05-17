@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static com.daugherty.movie.collector.test.mother.MovieMother.movieWithId;
-import static com.daugherty.movie.collector.test.mother.ReviewMother.*;
+import static com.daugherty.movie.collector.test.factory.MovieFactory.movieWithId;
+import static com.daugherty.movie.collector.test.factory.ReviewFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;

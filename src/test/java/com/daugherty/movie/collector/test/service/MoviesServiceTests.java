@@ -9,15 +9,14 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
-import com.daugherty.movie.collector.service.MoviesService;
 import com.daugherty.movie.collector.service.MoviesServiceImpl;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,24 +28,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class MoviesServiceTests {
 
-    @MockBean
+    @Mock
     private Movies movies;
 
-    @MockBean
+    @Mock
     private Reviews reviews;
 
-    @MockBean
+    @Mock
     private MovieDetailsService detailsService;
 
-    private MoviesService service;
-
-    @BeforeEach
-    private void setup() {
-        service = new MoviesServiceImpl(movies, reviews, detailsService);
-    }
+    @InjectMocks
+    private MoviesServiceImpl service;
 
     @Test
     void getAllMoviesWithNoMovies() {

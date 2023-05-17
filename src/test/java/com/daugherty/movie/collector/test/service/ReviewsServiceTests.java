@@ -7,15 +7,14 @@ import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
-import com.daugherty.movie.collector.service.ReviewsService;
 import com.daugherty.movie.collector.service.ReviewsServiceImpl;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
 import java.util.List;
@@ -27,21 +26,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ReviewsServiceTests {
 
-    @MockBean
+    @Mock
     private Movies movies;
 
-    @MockBean
+    @Mock
     private Reviews reviews;
 
-    private ReviewsService service;
-
-    @BeforeEach
-    private void setup() {
-        service = new ReviewsServiceImpl(movies, reviews);
-    }
+    @InjectMocks
+    private ReviewsServiceImpl service;
 
     @Test
     void getAllReviewsWithNoReviews() {

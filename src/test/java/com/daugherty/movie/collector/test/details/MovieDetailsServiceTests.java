@@ -1,4 +1,4 @@
-package com.daugherty.movie.collector.test.external;
+package com.daugherty.movie.collector.test.details;
 
 import com.daugherty.movie.collector.details.MovieDetails;
 import com.daugherty.movie.collector.details.themoviedb.TmdbMovieDetailsService;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class MovieDbServiceTests {
+public class MovieDetailsServiceTests {
 
     // TODO: Add WireMock versions of these tests.
 

@@ -1,23 +1,19 @@
 package com.daugherty.movie.collector.service;
 
+import com.daugherty.movie.collector.details.MovieDetails;
+import com.daugherty.movie.collector.details.MovieDetailsService;
 import com.daugherty.movie.collector.dto.MovieDetailsDto;
 import com.daugherty.movie.collector.dto.MovieDto;
 import com.daugherty.movie.collector.dto.ReviewValue;
 import com.daugherty.movie.collector.exception.MovieNotFoundException;
-import com.daugherty.movie.collector.details.MovieDetails;
-import com.daugherty.movie.collector.details.MovieDetailsService;
 import com.daugherty.movie.collector.model.Movie;
 import com.daugherty.movie.collector.model.Review;
 import com.daugherty.movie.collector.repository.Movies;
 import com.daugherty.movie.collector.repository.Reviews;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 

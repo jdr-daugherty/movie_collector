@@ -6,7 +6,6 @@ import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
@@ -15,7 +14,6 @@ public class ReviewDto {
     @JsonProperty("id")
     private long id;
 
-    @NotNull
     @Schema(description = "The user-submitted title of this review.")
     @JsonProperty("title")
     private String title;
@@ -28,7 +26,6 @@ public class ReviewDto {
     @JsonProperty("movie_id")
     private long movieId;
 
-    @NotNull
     @Schema(description = "The date and time that this review was last updated.")
     @JsonProperty("reviewed")
     private Date reviewed;

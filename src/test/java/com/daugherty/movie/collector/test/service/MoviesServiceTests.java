@@ -21,8 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.daugherty.movie.collector.test.mother.MovieMother.*;
-import static com.daugherty.movie.collector.test.mother.ReviewMother.reviewWithId;
+import static com.daugherty.movie.collector.test.factory.MovieFactory.*;
+import static com.daugherty.movie.collector.test.factory.ReviewFactory.reviewWithId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
